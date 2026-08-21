@@ -68,7 +68,7 @@ class StatusCommand extends VanillaCommand{
 		$mUsage = Process::getAdvancedMemoryUsage();
 
 		$server = $sender->getServer();
-			$sender->sendMessage(TextFormat::DARK_AQUA . "✦ " . TextFormat::AQUA . "RyxMC" . TextFormat::WHITE . " STATUS");
+			$sender->sendMessage(TextFormat::DARK_AQUA . "✦ " . TextFormat::AQUA . "QXRND - PocketMine-MP" . TextFormat::WHITE . " STATUS");
 			$sender->sendMessage(TextFormat::GRAY . "  Rendimiento en tiempo real");
 			$sender->sendMessage(TextFormat::BLUE . "------------------------------");
 

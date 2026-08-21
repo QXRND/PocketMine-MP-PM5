@@ -56,7 +56,7 @@ class VersionCommand extends VanillaCommand{
 			$jitMode = Utils::getOpcacheJitMode();
 			$jitText = $jitMode === null ? "No disponible" : ($jitMode === 0 ? "Desactivado" : "Activado");
 
-			$sender->sendMessage(TextFormat::DARK_AQUA . "✦ " . TextFormat::AQUA . "RyxMC" . TextFormat::WHITE . " Network");
+			$sender->sendMessage(TextFormat::DARK_AQUA . "✦ " . TextFormat::AQUA . "QXRND - PocketMine-MP" . TextFormat::WHITE . " Network");
 			$sender->sendMessage(TextFormat::GRAY . "  Información del servidor");
 			$sender->sendMessage(TextFormat::BLUE . "------------------------------");
 			$sender->sendMessage(TextFormat::AQUA . "Servidor  " . TextFormat::WHITE . "> " . TextFormat::AQUA . VersionInfo::NAME);
@@ -69,7 +69,7 @@ class VersionCommand extends VanillaCommand{
 			$sender->sendMessage(TextFormat::AQUA . "OPcache   " . TextFormat::WHITE . "> " . TextFormat::GREEN . "JIT " . $jitText);
 			$sender->sendMessage(TextFormat::BLUE . "------------------------------");
 			$sender->sendMessage(TextFormat::GRAY . "Build " . TextFormat::DARK_GRAY . substr(VersionInfo::GIT_HASH(), 0, 12));
-			$sender->sendMessage(TextFormat::DARK_AQUA . "RyxMC " . TextFormat::GRAY . "- desarrollado por " . TextFormat::GOLD . "DevPapo");
+			$sender->sendMessage(TextFormat::DARK_AQUA . "QXRND - PocketMine-MP " . TextFormat::GRAY . "- desarrollado por " . TextFormat::GOLD . "DevPapo");
 		}else{
 			$pluginName = implode(" ", $args);
 			$exactPlugin = $sender->getServer()->getPluginManager()->getPlugin($pluginName);

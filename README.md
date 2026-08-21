@@ -74,16 +74,16 @@ This project is licensed under **LGPL-3.0**, inherited unchanged from the upstre
 
 SyntaxStudios, NetherGamesMC and pmmp/PocketMine are not affiliated with Mojang. All brands and trademarks belong to their respective owners. This software is not Mojang-approved, nor associated with Mojang.
 
-## Enlaces de QXRND PM5
+## Enlaces de QXRND - PocketMine-MP PM5
 
 | Recurso | Enlace |
 |---|---|
 | Código fuente editable | [QXRND/PocketMine-MP-PM5](https://github.com/QXRND/PocketMine-MP-PM5) |
 | Egg de Pterodactyl | [QXRND/PocketMine-MP-Egg](https://github.com/QXRND/PocketMine-MP-Egg) |
-| Release PM5 1.26.44 | [v5.44.4-ryxmc.1](https://github.com/QXRND/PocketMine-MP-PM5/releases/tag/v5.44.4-ryxmc.1) |
-| Descargar PHAR | [PocketMine-MP-PM5.phar](https://github.com/QXRND/PocketMine-MP-PM5/releases/download/v5.44.4-ryxmc.1/PocketMine-MP-PM5.phar) |
+| Release PM5 1.26.44 | [v5.44.4-qxrnd.1](https://github.com/QXRND/PocketMine-MP-PM5/releases/tag/v5.44.4-qxrnd.1) |
+| Descargar PHAR | [PocketMine-MP.phar](https://github.com/QXRND/PocketMine-MP-PM5/releases/download/v5.44.4-qxrnd.1/PocketMine-MP.phar) |
 
-El egg descarga automáticamente el release más reciente de este repositorio cuando se selecciona `PM5`. Para publicar una actualización, sube un nuevo release con un asset llamado `PocketMine-MP-PM5.phar`.
+El egg descarga automáticamente el release más reciente de este repositorio cuando se selecciona `PM5`. Para publicar una actualización, sube un nuevo release con un asset llamado `PocketMine-MP.phar`.
 
 Autor de la distribución: DevPapo  
 Soporte: admin@scon.host  

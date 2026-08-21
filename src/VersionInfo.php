@@ -30,7 +30,7 @@ use function is_int;
 use function str_repeat;
 
 final class VersionInfo{
-		public const NAME = "RyxMC";
+		public const NAME = "QXRND - PocketMine-MP";
 		public const BASE_VERSION = "5.44.4";
 		public const IS_DEVELOPMENT_BUILD = false;
 		public const BUILD_CHANNEL = "stable";
