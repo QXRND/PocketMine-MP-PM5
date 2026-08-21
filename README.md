@@ -80,8 +80,8 @@ SyntaxStudios, NetherGamesMC and pmmp/PocketMine are not affiliated with Mojang.
 |---|---|
 | Código fuente editable | [QXRND/PocketMine-MP-PM5](https://github.com/QXRND/PocketMine-MP-PM5) |
 | Egg de Pterodactyl | [QXRND/PocketMine-MP-Egg](https://github.com/QXRND/PocketMine-MP-Egg) |
-| Release PM5 1.26.44 | [v5.44.4-qxrnd.1](https://github.com/QXRND/PocketMine-MP-PM5/releases/tag/v5.44.4-qxrnd.1) |
-| Descargar PHAR | [PocketMine-MP.phar](https://github.com/QXRND/PocketMine-MP-PM5/releases/download/v5.44.4-qxrnd.1/PocketMine-MP.phar) |
+| Release PM5 1.26.44 | [v5.44.4-qxrnd.2](https://github.com/QXRND/PocketMine-MP-PM5/releases/tag/v5.44.4-qxrnd.2) |
+| Descargar PHAR | [PocketMine-MP.phar](https://github.com/QXRND/PocketMine-MP-PM5/releases/download/v5.44.4-qxrnd.2/PocketMine-MP.phar) |
 
 El egg descarga automáticamente el release más reciente de este repositorio cuando se selecciona `PM5`. Para publicar una actualización, sube un nuevo release con un asset llamado `PocketMine-MP.phar`.
 
