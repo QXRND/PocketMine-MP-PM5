@@ -54,22 +54,22 @@ class VersionCommand extends VanillaCommand{
 		if(count($args) === 0){
 			$versionColor = VersionInfo::IS_DEVELOPMENT_BUILD ? TextFormat::YELLOW : TextFormat::GREEN;
 			$jitMode = Utils::getOpcacheJitMode();
-			$jitText = $jitMode === null ? "No disponible" : ($jitMode === 0 ? "Desactivado" : "Activado");
+			$jitText = $jitMode === null ? "Unavailable" : ($jitMode === 0 ? "Disabled" : "Enabled");
 
 			$sender->sendMessage(TextFormat::DARK_AQUA . "✦ " . TextFormat::AQUA . "QXRND - PocketMine-MP" . TextFormat::WHITE . " Network");
-			$sender->sendMessage(TextFormat::GRAY . "  Información del servidor");
+			$sender->sendMessage(TextFormat::GRAY . "  Server information");
 			$sender->sendMessage(TextFormat::BLUE . "------------------------------");
-			$sender->sendMessage(TextFormat::AQUA . "Servidor  " . TextFormat::WHITE . "> " . TextFormat::AQUA . VersionInfo::NAME);
-			$sender->sendMessage(TextFormat::AQUA . "Versión   " . TextFormat::WHITE . "> " . $versionColor . VersionInfo::VERSION()->getFullVersion());
-			$sender->sendMessage(TextFormat::AQUA . "Autor     " . TextFormat::WHITE . "> " . TextFormat::GOLD . "DevPapo");
-			$sender->sendMessage(TextFormat::AQUA . "Plataforma" . TextFormat::WHITE . " > " . TextFormat::GREEN . "Minecraft Bedrock");
-			$sender->sendMessage(TextFormat::AQUA . "Bedrock   " . TextFormat::WHITE . "> " . TextFormat::GREEN . ProtocolInfo::MINECRAFT_VERSION_NETWORK . TextFormat::GRAY . " (protocolo " . ProtocolInfo::CURRENT_PROTOCOL . ")");
+			$sender->sendMessage(TextFormat::AQUA . "Server    " . TextFormat::WHITE . "> " . TextFormat::AQUA . VersionInfo::NAME);
+			$sender->sendMessage(TextFormat::AQUA . "Version   " . TextFormat::WHITE . "> " . $versionColor . VersionInfo::VERSION()->getFullVersion());
+			$sender->sendMessage(TextFormat::AQUA . "Author    " . TextFormat::WHITE . "> " . TextFormat::GOLD . "DevPapo");
+			$sender->sendMessage(TextFormat::AQUA . "Platform  " . TextFormat::WHITE . " > " . TextFormat::GREEN . "Minecraft Bedrock");
+			$sender->sendMessage(TextFormat::AQUA . "Bedrock   " . TextFormat::WHITE . "> " . TextFormat::GREEN . ProtocolInfo::MINECRAFT_VERSION_NETWORK . TextFormat::GRAY . " (protocol " . ProtocolInfo::CURRENT_PROTOCOL . ")");
 			$sender->sendMessage(TextFormat::AQUA . "PHP       " . TextFormat::WHITE . "> " . TextFormat::GREEN . PHP_VERSION);
-			$sender->sendMessage(TextFormat::AQUA . "Sistema   " . TextFormat::WHITE . "> " . TextFormat::GREEN . Utils::getOS());
+			$sender->sendMessage(TextFormat::AQUA . "System    " . TextFormat::WHITE . "> " . TextFormat::GREEN . Utils::getOS());
 			$sender->sendMessage(TextFormat::AQUA . "OPcache   " . TextFormat::WHITE . "> " . TextFormat::GREEN . "JIT " . $jitText);
 			$sender->sendMessage(TextFormat::BLUE . "------------------------------");
 			$sender->sendMessage(TextFormat::GRAY . "Build " . TextFormat::DARK_GRAY . substr(VersionInfo::GIT_HASH(), 0, 12));
-			$sender->sendMessage(TextFormat::DARK_AQUA . "QXRND - PocketMine-MP " . TextFormat::GRAY . "- desarrollado por " . TextFormat::GOLD . "DevPapo");
+			$sender->sendMessage(TextFormat::DARK_AQUA . "QXRND - PocketMine-MP " . TextFormat::GRAY . "- developed by " . TextFormat::GOLD . "DevPapo");
 		}else{
 			$pluginName = implode(" ", $args);
 			$exactPlugin = $sender->getServer()->getPluginManager()->getPlugin($pluginName);
