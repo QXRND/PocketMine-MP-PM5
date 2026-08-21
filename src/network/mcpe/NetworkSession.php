@@ -29,6 +29,7 @@ use pmmp\encoding\DataDecodeException;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\event\player\PlayerDuplicateLoginEvent;
 use pocketmine\event\player\PlayerResourcePackOfferEvent;
+use pocketmine\event\player\SessionDisconnectEvent;
 use pocketmine\event\server\DataPacketDecodeEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
@@ -157,7 +158,7 @@ class NetworkSession{
 
 	private \PrefixedLogger $logger;
 	private ?Player $player = null;
-	private ?PlayerInfo $info = null;
+	protected ?PlayerInfo $info = null;
 	private ?int $ping = null;
 
 	private ?PacketHandler $handler = null;
@@ -169,7 +170,7 @@ class NetworkSession{
 
 	private bool $connected = true;
 	private bool $disconnectGuard = false;
-	private bool $loggedIn = false;
+	protected bool $loggedIn = false;
 	private bool $authenticated = false;
 	private int $connectTime;
 	private ?CompoundTag $cachedOfflinePlayerData = null;
@@ -190,7 +191,8 @@ class NetworkSession{
 	/** @phpstan-var \SplQueue<array{CompressBatchPromise|string, list<PromiseResolver<true>>, bool}> */
 	private \SplQueue $compressedQueue;
 	private bool $forceAsyncCompression = true;
-	private bool $enableCompression = false; //disabled until handshake completed
+	private ?int $protocolId = null;
+	protected bool $enableCompression = false; //disabled until handshake completed
 
 	private int $nextAckReceiptId = 0;
 	/**
@@ -214,7 +216,7 @@ class NetworkSession{
 		private Server $server,
 		private NetworkSessionManager $manager,
 		private PacketPool $packetPool,
-		private PacketSender $sender,
+		protected PacketSender $sender,
 		private PacketBroadcaster $broadcaster,
 		private EntityEventBroadcaster $entityEventBroadcaster,
 		private Compressor $compressor,
@@ -383,6 +385,26 @@ class NetworkSession{
 		return false;
 	}
 
+	public function setProtocolId(int $protocolId) : void{
+		$this->protocolId = $protocolId;
+
+		$this->typeConverter = TypeConverter::getInstance($protocolId);
+		$this->broadcaster = $this->server->getPacketBroadcaster($protocolId);
+		$this->entityEventBroadcaster = $this->server->getEntityEventBroadcaster($this->broadcaster, $this->typeConverter);
+	}
+
+	public function getProtocolId() : int{
+		return $this->protocolId ?? ProtocolInfo::CURRENT_PROTOCOL;
+	}
+
+	/**
+	 * @return \Closure[]|ObjectSet
+	 * @phpstan-return ObjectSet<\Closure() : void>
+	 */
+	public function getDisposeHooks() : ObjectSet{
+		return $this->disposeHooks;
+	}
+
 	/**
 	 * @throws PacketHandlingException
 	 */
@@ -412,22 +434,34 @@ class NetworkSession{
 			}
 
 			if($this->enableCompression){
-				$compressionType = ord($payload[0]);
-				$compressed = substr($payload, 1);
-				if($compressionType === CompressionAlgorithm::NONE){
-					$decompressed = $compressed;
-				}elseif($compressionType === $this->compressor->getNetworkId()){
-					Timings::$playerNetworkReceiveDecompress->startTiming();
+				if($this->protocolId >= ProtocolInfo::PROTOCOL_1_20_60){
+					$compressionType = ord($payload[0]);
+					$compressed = substr($payload, 1);
+					if($compressionType === CompressionAlgorithm::NONE){
+						$decompressed = $compressed;
+					}elseif($compressionType === $this->compressor->getNetworkId()){
+						try{
+							Timings::$playerNetworkReceiveDecompress->startTiming();
+							$decompressed = $this->compressor->decompress($compressed);
+						}catch(DecompressionException $e){
+							$this->logger->debug("Failed to decompress packet: " . base64_encode($compressed));
+							throw PacketHandlingException::wrap($e, "Compressed packet batch decode error");
+						}finally{
+							Timings::$playerNetworkReceiveDecompress->stopTiming();
+						}
+					}else{
+						throw new PacketHandlingException("Packet compressed with unexpected compression type $compressionType");
+					}
+				}else{
 					try{
-						$decompressed = $this->compressor->decompress($compressed);
+						Timings::$playerNetworkReceiveDecompress->startTiming();
+						$decompressed = $this->compressor->decompress($payload);
 					}catch(DecompressionException $e){
-						$this->logger->debug("Failed to decompress packet: " . base64_encode($compressed));
+						$this->logger->debug("Failed to decompress packet: " . base64_encode($payload));
 						throw PacketHandlingException::wrap($e, "Compressed packet batch decode error");
 					}finally{
 						Timings::$playerNetworkReceiveDecompress->stopTiming();
 					}
-				}else{
-					throw new PacketHandlingException("Packet compressed with unexpected compression type $compressionType");
 				}
 			}else{
 				$decompressed = $payload;
@@ -532,7 +566,7 @@ class NetworkSession{
 			try{
 				$stream = new ByteBufferReader($buffer);
 				try{
-					$packet->decode($stream);
+					$packet->decode($stream, $this->getProtocolId());
 				}catch(PacketDecodeException $e){
 					throw PacketHandlingException::wrap($e);
 				}
@@ -582,6 +616,9 @@ class NetworkSession{
 	 * @phpstan-param PromiseResolver<true>|null $ackReceiptResolver
 	 */
 	private function sendDataPacketInternal(ClientboundPacket $packet, bool $immediate, ?PromiseResolver $ackReceiptResolver) : bool{
+		if(self::traceTargetMatches($this->getDisplayName())){
+			file_put_contents("/tmp/pkt_trace.txt", microtime(true) . " SEND to='" . $this->getDisplayName() . "' proto=" . $this->getProtocolId() . " class=" . get_class($packet) . " " . self::summarizePacketForTrace($packet) . "\n", FILE_APPEND);
+		}
 		if(!$this->connected){
 			return false;
 		}
@@ -610,7 +647,7 @@ class NetworkSession{
 			$writer = new ByteBufferWriter();
 			foreach($packets as $evPacket){
 				$writer->clear(); //memory reuse let's gooooo
-				$this->addToSendBuffer(self::encodePacketTimed($writer, $evPacket));
+				$this->addToSendBuffer(self::encodePacketTimed($writer, $this->getProtocolId(), $evPacket));
 			}
 			if($immediate){
 				$this->flushGamePacketQueue();
@@ -624,6 +661,89 @@ class NetworkSession{
 
 	public function sendDataPacket(ClientboundPacket $packet, bool $immediate = false) : bool{
 		return $this->sendDataPacketInternal($packet, $immediate, null);
+	}
+
+	private const TRACE_BLOCKLIST_CLASSES = [
+		"pocketmine\\entity\\Location",
+		"pocketmine\\world\\World",
+		"pocketmine\\player\\Player",
+		"pocketmine\\nbt\\tag\\CompoundTag",
+		"pocketmine\\network\\mcpe\\protocol\\types\\CacheableNbt",
+	];
+
+	private const TRACE_INTERESTING_CLASSES = [
+		"pocketmine\\network\\mcpe\\protocol\\PlayerListPacket",
+		"pocketmine\\network\\mcpe\\protocol\\PlayerSkinPacket",
+		"pocketmine\\network\\mcpe\\protocol\\AddPlayerPacket",
+		"pocketmine\\network\\mcpe\\protocol\\AddActorPacket",
+		"pocketmine\\network\\mcpe\\protocol\\RemoveActorPacket",
+		"pocketmine\\network\\mcpe\\protocol\\SetActorDataPacket",
+	];
+
+	public static function isInterestingForTrace(object $packet) : bool{
+		return in_array(get_class($packet), self::TRACE_INTERESTING_CLASSES, true);
+	}
+
+	public static function traceTargetMatches(string $displayName) : bool{
+		$target = @file_get_contents("/tmp/pkt_trace_target.txt");
+		if($target === false || trim($target) === ""){
+			return false;
+		}
+		foreach(explode(",", trim($target)) as $candidate){
+			if($candidate !== "" && stripos($displayName, $candidate) !== false){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static function summarizePacketForTrace(mixed $value, int $depth = 0) : string{
+		if(is_object($value) && in_array(get_class($value), self::TRACE_BLOCKLIST_CLASSES, true)){
+			return get_class($value) . "{...blocklisted...}";
+		}
+		if($depth > 5){
+			return "...";
+		}
+		try{
+			if(is_scalar($value) || $value === null){
+				if(is_string($value)){
+					return strlen($value) > 400 ? var_export(substr($value, 0, 400), true) . "...(" . strlen($value) . " bytes)" : var_export($value, true);
+				}
+				return var_export($value, true);
+			}
+			if(is_array($value)){
+				$parts = [];
+				$i = 0;
+				foreach($value as $k => $v){
+					if($i++ >= 30){
+						$parts[] = "...(" . count($value) . " total)";
+						break;
+					}
+					$parts[] = "$k=" . self::summarizePacketForTrace($v, $depth + 1);
+				}
+				return "[" . implode(", ", $parts) . "]";
+			}
+			if(is_object($value)){
+				$parts = [];
+				foreach((array) $value as $k => $v){
+					$k = (string) $k;
+					if($k !== "" && $k[0] === "\0"){
+						$segments = explode("\0", $k);
+						$cleanKey = $segments[2] ?? $k;
+					}else{
+						$cleanKey = $k;
+					}
+					if($cleanKey === ""){
+						continue;
+					}
+					$parts[] = "$cleanKey=" . self::summarizePacketForTrace($v, $depth + 1);
+				}
+				return get_class($value) . "{" . implode(", ", $parts) . "}";
+			}
+			return gettype($value);
+		}catch(\Throwable $e){
+			return "[summarize error: " . $e->getMessage() . "]";
+		}
 	}
 
 	/**
@@ -643,11 +763,11 @@ class NetworkSession{
 	/**
 	 * @internal
 	 */
-	public static function encodePacketTimed(ByteBufferWriter $serializer, ClientboundPacket $packet) : string{
+	public static function encodePacketTimed(ByteBufferWriter $serializer, int $protocolId, ClientboundPacket $packet) : string{
 		$timings = Timings::getEncodeDataPacketTimings($packet);
 		$timings->startTiming();
 		try{
-			$packet->encode($serializer);
+			$packet->encode($serializer, $protocolId);
 			return $serializer->getData();
 		}finally{
 			$timings->stopTiming();
@@ -674,7 +794,7 @@ class NetworkSession{
 				PacketBatch::encodeRaw($stream, $this->sendBuffer);
 
 				if($this->enableCompression){
-					$batch = $this->server->prepareBatch($stream->getData(), $this->compressor, $syncMode, Timings::$playerNetworkSendCompressSessionBuffer);
+					$batch = $this->server->prepareBatch($stream->getData(), $this->getProtocolId(), $this->compressor, $syncMode, Timings::$playerNetworkSendCompressSessionBuffer);
 				}else{
 					$batch = $stream->getData();
 				}
@@ -786,6 +906,10 @@ class NetworkSession{
 		if($this->connected && !$this->disconnectGuard){
 			$this->disconnectGuard = true;
 			$func();
+
+			$event = new SessionDisconnectEvent($this);
+			$event->call();
+
 			$this->disconnectGuard = false;
 			$this->flushGamePacketQueue();
 			$this->sender->close("");
@@ -1040,6 +1164,12 @@ class NetworkSession{
 		$this->player->doFirstSpawn();
 		$this->forceAsyncCompression = false;
 		$this->setHandler(new InGamePacketHandler($this->player, $this, $this->invManager));
+
+		if($this->getProtocolId() >= ProtocolInfo::PROTOCOL_1_26_40){
+			//see the comment in PreSpawnPacketHandler for why this is deferred to post-spawn for these clients
+			$this->logger->debug("Sending player list");
+			$this->syncPlayerList($this->server->getOnlinePlayers());
+		}
 	}
 
 	public function onServerDeath(Translatable|string $deathMessage) : void{
@@ -1196,7 +1326,7 @@ class NetworkSession{
 				CommandPermissions::NORMAL,
 				$aliasObj,
 				[
-					new CommandOverload(chaining: false, parameters: [CommandParameter::standard("args", AvailableCommandsPacket::ARG_TYPE_RAWTEXT, 0, true)])
+					new CommandOverload(chaining: false, parameters: [CommandParameter::standard("args", AvailableCommandsPacket::convertArg($this->getProtocolId(), AvailableCommandsPacket::ARG_TYPE_RAWTEXT), 0, true)])
 				],
 				chainedSubCommandData: []
 			);
@@ -1264,6 +1394,11 @@ class NetworkSession{
 	 * @phpstan-param \Closure() : void $onCompletion
 	 */
 	private function sendChunkPacket(string $chunkPacket, \Closure $onCompletion, World $world) : void{
+		if(self::traceTargetMatches($this->getDisplayName())){
+			$crc = hash("crc32b", $chunkPacket);
+			file_put_contents("/tmp/pkt_trace.txt", microtime(true) . " CHUNK to='" . $this->getDisplayName() . "' proto=" . $this->getProtocolId() . " bytes=" . strlen($chunkPacket) . " crc32=" . $crc . "\n", FILE_APPEND);
+			file_put_contents("/tmp/chunk_dump_" . $crc . "_proto" . $this->getProtocolId() . ".bin", $chunkPacket);
+		}
 		$world->timings->syncChunkSend->startTiming();
 		try{
 			$this->queueCompressed($chunkPacket);
@@ -1280,7 +1415,7 @@ class NetworkSession{
 	 */
 	public function startUsingChunk(int $chunkX, int $chunkZ, \Closure $onCompletion) : void{
 		$world = $this->player->getLocation()->getWorld();
-		$promiseOrPacket = ChunkCache::getInstance($world, $this->compressor)->request($chunkX, $chunkZ);
+		$promiseOrPacket = ChunkCache::getInstance($world, $this->compressor)->request($chunkX, $chunkZ, $this->getTypeConverter());
 		if(is_string($promiseOrPacket)){
 			$this->sendChunkPacket($promiseOrPacket, $onCompletion, $world);
 			return;
@@ -1338,13 +1473,34 @@ class NetworkSession{
 	 * @param Player[] $players
 	 */
 	public function syncPlayerList(array $players) : void{
-		$this->sendDataPacket(PlayerListPacket::add(array_map(function(Player $player) : PlayerListEntry{
-			return PlayerListEntry::createAdditionEntry($player->getUniqueId(), $player->getId(), $player->getDisplayName(), $this->typeConverter->getSkinAdapter()->toSkinData($player->getSkin()), $player->getXuid());
-		}, $players)));
+		$entries = [];
+		foreach($players as $player){
+			if($this->typeConverter->isUnsafeSkinForPlayerList($player->getSkin())){
+				continue;
+			}
+			//getName() (raw username), not getDisplayName(): Bedrock's PlayerListPacket
+			//username field also drives the client's native "@" chat-mention autocomplete.
+			//A rank plugin's colored/prefixed getDisplayName() (e.g. "§4[§cOWNER§4]§r  §rName")
+			//gets offered as the mention target and inserted verbatim (quoted, since it
+			//contains spaces) into the composer - see PlayerListEntry below. Chat message
+			//formatting and the floating nametag both still use getDisplayName() elsewhere
+			//and are unaffected by this.
+			$entries[] = PlayerListEntry::createAdditionEntry($player->getUniqueId(), $player->getId(), $player->getName(), $this->typeConverter->safeToSkinData($player->getSkin()), $player->getXuid());
+		}
+		if(count($entries) > 0){
+			$this->sendDataPacket(PlayerListPacket::add($entries));
+		}
 	}
 
 	public function onPlayerAdded(Player $p) : void{
-		$this->sendDataPacket(PlayerListPacket::add([PlayerListEntry::createAdditionEntry($p->getUniqueId(), $p->getId(), $p->getDisplayName(), $this->typeConverter->getSkinAdapter()->toSkinData($p->getSkin()), $p->getXuid())]));
+		if($this->typeConverter->isUnsafeSkinForPlayerList($p->getSkin())){
+			return;
+		}
+		try{
+			$this->sendDataPacket(PlayerListPacket::add([PlayerListEntry::createAdditionEntry($p->getUniqueId(), $p->getId(), $p->getName(), $this->typeConverter->safeToSkinData($p->getSkin()), $p->getXuid())]));
+		}catch(\Throwable $e){
+			file_put_contents("/tmp/onplayeradded_debug.txt", microtime(true) . " EXCEPTION for new player '" . $p->getName() . "' shown to '" . $this->getDisplayName() . "': " . get_class($e) . ": " . $e->getMessage() . "\n" . $e->getTraceAsString() . "\n\n", FILE_APPEND);
+		}
 	}
 
 	public function onPlayerRemoved(Player $p) : void{

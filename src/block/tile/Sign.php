@@ -30,6 +30,7 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\utils\Binary;
 use pocketmine\world\World;
 use function array_pad;
@@ -167,7 +168,7 @@ class Sign extends Spawnable{
 		$this->editorEntityRuntimeId = $editorEntityRuntimeId;
 	}
 
-	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
+	protected function addAdditionalSpawnData(CompoundTag $nbt, TypeConverter $typeConverter) : void{
 		$nbt->setTag(self::TAG_FRONT_TEXT, $this->writeTextTag($this->text));
 		$nbt->setTag(self::TAG_BACK_TEXT, $this->writeTextTag($this->backText));
 		$nbt->setByte(self::TAG_WAXED, $this->waxed ? 1 : 0);

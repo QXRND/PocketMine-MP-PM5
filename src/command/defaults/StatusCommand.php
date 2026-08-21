@@ -29,6 +29,7 @@ use pocketmine\lang\Translatable;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\Process;
 use pocketmine\utils\TextFormat;
+use pocketmine\VersionInfo;
 use function count;
 use function floor;
 use function microtime;
@@ -67,10 +68,9 @@ class StatusCommand extends VanillaCommand{
 		$mUsage = Process::getAdvancedMemoryUsage();
 
 		$server = $sender->getServer();
-		$sender->sendMessage(l10n::pocketmine_command_status_header()->format(
-			TextFormat::GREEN . "---- " . TextFormat::RESET,
-			TextFormat::GREEN . " ----" . TextFormat::RESET
-		));
+			$sender->sendMessage(TextFormat::DARK_AQUA . "✦ " . TextFormat::AQUA . "RyxMC" . TextFormat::WHITE . " STATUS");
+			$sender->sendMessage(TextFormat::GRAY . "  Rendimiento en tiempo real");
+			$sender->sendMessage(TextFormat::BLUE . "------------------------------");
 
 		$time = (int) (microtime(true) - $server->getStartTime());
 
@@ -117,18 +117,21 @@ class StatusCommand extends VanillaCommand{
 			self::send($sender, l10n::pocketmine_command_status_memory_manager(self::formatMemory($globalLimit)));
 		}
 
-		foreach($server->getWorldManager()->getWorlds() as $world){
-			$worldName = $world->getFolderName() !== $world->getDisplayName() ? " (" . $world->getDisplayName() . ")" : "";
-			$timeColor = $world->getTickRateTime() > 40 ? TextFormat::RED : TextFormat::YELLOW;
-			self::send($sender, l10n::pocketmine_command_status_world(
-				"\"{$world->getFolderName()}\"$worldName",
-				TextFormat::RED . number_format(count($world->getLoadedChunks())) . TextFormat::GREEN,
-				TextFormat::RED . number_format(count($world->getTickingChunks())) . TextFormat::GREEN,
-				TextFormat::RED . number_format(count($world->getEntities())) . TextFormat::GREEN,
-				l10n::pocketmine_command_status_world_timeStat(strval(round($world->getTickRateTime(), 2)))->prefix($timeColor)
-			));
-		}
+			foreach($server->getWorldManager()->getWorlds() as $world){
+				$worldName = $world->getFolderName() !== $world->getDisplayName() ? " (" . $world->getDisplayName() . ")" : "";
+				$timeColor = $world->getTickRateTime() > 40 ? TextFormat::RED : TextFormat::YELLOW;
+				self::send($sender, l10n::pocketmine_command_status_world(
+					"\"{$world->getFolderName()}\"$worldName",
+					TextFormat::RED . number_format(count($world->getLoadedChunks())) . TextFormat::GREEN,
+					TextFormat::RED . number_format(count($world->getTickingChunks())) . TextFormat::GREEN,
+					TextFormat::RED . number_format(count($world->getEntities())) . TextFormat::GREEN,
+					l10n::pocketmine_command_status_world_timeStat(strval(round($world->getTickRateTime(), 2)))->prefix($timeColor)
+				));
+			}
 
-		return true;
+			$sender->sendMessage(TextFormat::BLUE . "------------------------------");
+			$sender->sendMessage(TextFormat::DARK_AQUA . "Soporte: " . TextFormat::AQUA . VersionInfo::DISCORD_URL);
+
+			return true;
 	}
 }

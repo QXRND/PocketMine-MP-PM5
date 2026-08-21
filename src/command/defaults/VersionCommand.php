@@ -33,9 +33,9 @@ use pocketmine\utils\Utils;
 use pocketmine\VersionInfo;
 use function count;
 use function implode;
-use function sprintf;
 use function stripos;
 use function strtolower;
+use function substr;
 use const PHP_VERSION;
 
 class VersionCommand extends VanillaCommand{
@@ -52,32 +52,24 @@ class VersionCommand extends VanillaCommand{
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
 		if(count($args) === 0){
-			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_serverSoftwareName(
-				TextFormat::GREEN . VersionInfo::NAME . TextFormat::RESET
-			));
 			$versionColor = VersionInfo::IS_DEVELOPMENT_BUILD ? TextFormat::YELLOW : TextFormat::GREEN;
-			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_serverSoftwareVersion(
-				$versionColor . VersionInfo::VERSION()->getFullVersion() . TextFormat::RESET,
-				TextFormat::GREEN . VersionInfo::GIT_HASH() . TextFormat::RESET
-			));
-			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_minecraftVersion(
-				TextFormat::GREEN . ProtocolInfo::MINECRAFT_VERSION_NETWORK . TextFormat::RESET,
-				TextFormat::GREEN . ProtocolInfo::CURRENT_PROTOCOL . TextFormat::RESET
-			));
-			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_phpVersion(TextFormat::GREEN . PHP_VERSION . TextFormat::RESET));
-
 			$jitMode = Utils::getOpcacheJitMode();
-			if($jitMode !== null){
-				if($jitMode !== 0){
-					$jitStatus = KnownTranslationFactory::pocketmine_command_version_phpJitEnabled(sprintf("CRTO: %d", $jitMode));
-				}else{
-					$jitStatus = KnownTranslationFactory::pocketmine_command_version_phpJitDisabled();
-				}
-			}else{
-				$jitStatus = KnownTranslationFactory::pocketmine_command_version_phpJitNotSupported();
-			}
-			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_phpJitStatus($jitStatus->format(TextFormat::GREEN, TextFormat::RESET)));
-			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_operatingSystem(TextFormat::GREEN . Utils::getOS() . TextFormat::RESET));
+			$jitText = $jitMode === null ? "No disponible" : ($jitMode === 0 ? "Desactivado" : "Activado");
+
+			$sender->sendMessage(TextFormat::DARK_AQUA . "✦ " . TextFormat::AQUA . "RyxMC" . TextFormat::WHITE . " Network");
+			$sender->sendMessage(TextFormat::GRAY . "  Información del servidor");
+			$sender->sendMessage(TextFormat::BLUE . "------------------------------");
+			$sender->sendMessage(TextFormat::AQUA . "Servidor  " . TextFormat::WHITE . "> " . TextFormat::AQUA . VersionInfo::NAME);
+			$sender->sendMessage(TextFormat::AQUA . "Versión   " . TextFormat::WHITE . "> " . $versionColor . VersionInfo::VERSION()->getFullVersion());
+			$sender->sendMessage(TextFormat::AQUA . "Autor     " . TextFormat::WHITE . "> " . TextFormat::GOLD . "DevPapo");
+			$sender->sendMessage(TextFormat::AQUA . "Plataforma" . TextFormat::WHITE . " > " . TextFormat::GREEN . "Minecraft Bedrock");
+			$sender->sendMessage(TextFormat::AQUA . "Bedrock   " . TextFormat::WHITE . "> " . TextFormat::GREEN . ProtocolInfo::MINECRAFT_VERSION_NETWORK . TextFormat::GRAY . " (protocolo " . ProtocolInfo::CURRENT_PROTOCOL . ")");
+			$sender->sendMessage(TextFormat::AQUA . "PHP       " . TextFormat::WHITE . "> " . TextFormat::GREEN . PHP_VERSION);
+			$sender->sendMessage(TextFormat::AQUA . "Sistema   " . TextFormat::WHITE . "> " . TextFormat::GREEN . Utils::getOS());
+			$sender->sendMessage(TextFormat::AQUA . "OPcache   " . TextFormat::WHITE . "> " . TextFormat::GREEN . "JIT " . $jitText);
+			$sender->sendMessage(TextFormat::BLUE . "------------------------------");
+			$sender->sendMessage(TextFormat::GRAY . "Build " . TextFormat::DARK_GRAY . substr(VersionInfo::GIT_HASH(), 0, 12));
+			$sender->sendMessage(TextFormat::DARK_AQUA . "RyxMC " . TextFormat::GRAY . "- desarrollado por " . TextFormat::GOLD . "DevPapo");
 		}else{
 			$pluginName = implode(" ", $args);
 			$exactPlugin = $sender->getServer()->getPluginManager()->getPlugin($pluginName);

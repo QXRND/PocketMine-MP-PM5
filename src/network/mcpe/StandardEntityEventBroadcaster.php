@@ -35,6 +35,7 @@ use pocketmine\network\mcpe\protocol\EmotePacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\SetActorDataPacket;
 use pocketmine\network\mcpe\protocol\TakeItemActorPacket;
@@ -126,6 +127,11 @@ final class StandardEntityEventBroadcaster implements EntityEventBroadcaster{
 	}
 
 	public function onMobArmorChange(array $recipients, Living $mob) : void{
+		//protocol >= 1.26.40 used to disconnect the client shortly after any "minecraft:player"-
+		//typed entity it can see got a MobArmorEquipmentPacket with real (non-air) armor. Root
+		//cause turned out to be the stack ID VarInt encoding bug in
+		//CommonTypes::putNetworkItemStackDescriptor() - confirmed fixed live 2026-08-13, no
+		//longer needs to be skipped for this protocol range.
 		$inv = $mob->getArmorInventory();
 		$converter = $this->typeConverter;
 		$this->sendDataPacket($recipients, MobArmorEquipmentPacket::create(

@@ -29,6 +29,7 @@ use pocketmine\data\SavedDataLoadingException;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\FloatTag;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use function floor;
 
 /**
@@ -87,7 +88,7 @@ class MobHead extends Spawnable{
 		$this->rotation = $rotation;
 	}
 
-	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
+	protected function addAdditionalSpawnData(CompoundTag $nbt, TypeConverter $typeConverter) : void{
 		$nbt->setByte(self::TAG_SKULL_TYPE, MobHeadTypeIdMap::getInstance()->toId($this->mobHeadType));
 		$nbt->setFloat(self::TAG_ROTATION, $this->rotation * 360.0 / 16.0);
 	}

@@ -1,9 +1,25 @@
 {
-   "name": "pocketmine/pocketmine-mp",
-   "description": "A server software for Minecraft: Bedrock Edition written in PHP",
+   "name": "qxrnd/ryxmc",
+   "description": "RyxMC Bedrock server software with multi-protocol support",
    "type": "project",
-   "homepage": "https://pmmp.io",
+   "homepage": "https://github.com/QXRND/PocketMine-MP",
    "license": "LGPL-3.0",
+   "repositories": [
+      {"type": "vcs", "no-api": true, "url": "https://github.com/QXRND/BedrockBlockUpgradeSchema.git"},
+      {"type": "vcs", "no-api": true, "url": "https://github.com/QXRND/BedrockData-1.git"},
+      {"type": "vcs", "no-api": true, "url": "https://github.com/QXRND/BedrockItemUpgradeSchema.git"},
+      {"type": "vcs", "no-api": true, "url": "https://github.com/QXRND/BedrockProtocol.git"},
+      {"type": "vcs", "no-api": true, "url": "https://github.com/QXRND/BinaryUtils.git"},
+      {"type": "vcs", "no-api": true, "url": "https://github.com/QXRND/CallbackValidator.git"},
+      {"type": "vcs", "no-api": true, "url": "https://github.com/QXRND/Color.git"},
+      {"type": "vcs", "no-api": true, "url": "https://github.com/QXRND/ErrorHandler.git"},
+      {"type": "vcs", "no-api": true, "url": "https://github.com/QXRND/Log.git"},
+      {"type": "vcs", "no-api": true, "url": "https://github.com/QXRND/Math.git"},
+      {"type": "vcs", "no-api": true, "url": "https://github.com/QXRND/NBT.git"},
+      {"type": "vcs", "no-api": true, "url": "https://github.com/QXRND/RakLib.git"},
+      {"type": "vcs", "no-api": true, "url": "https://github.com/QXRND/RakLibIpc.git"},
+      {"type": "vcs", "no-api": true, "url": "https://github.com/QXRND/Snooze.git"}
+   ],
    "require": {
       "php": "^8.1",
       "php-64bit": "*",
@@ -35,9 +51,8 @@
       "adhocore/json-comment": "~1.2.0",
       "netresearch/jsonmapper": "~v5.0.0",
       "pocketmine/bedrock-block-upgrade-schema": "~5.2.0+bedrock-1.21.110",
-      "pocketmine/bedrock-data": "~6.7.0+bedrock-1.26.30",
+      "nethergamesmc/bedrock-data": "dev-master",
       "pocketmine/bedrock-item-upgrade-schema": "~1.17.0+bedrock-1.26.20",
-      "pocketmine/bedrock-protocol": "~58.0.0+bedrock-1.26.30",
       "pocketmine/binaryutils": "^0.2.1",
       "pocketmine/callback-validator": "~1.0.4",
       "pocketmine/color": "^0.3.0",
@@ -59,7 +74,8 @@
    },
    "replace": {
       "symfony/polyfill-ctype": "*",
-      "symfony/polyfill-mbstring": "*"
+      "symfony/polyfill-mbstring": "*",
+      "pocketmine/pocketmine-mp": "*"
    },
    "autoload": {
       "psr-4": {
@@ -93,8 +109,8 @@
       "update-codegen": [
          "@php build/codegen/bedrockdata-path-consts.php",
          "@php build/codegen/biome-ids.php",
-         "@php build/codegen/block-serializer-consts.php vendor/pocketmine/bedrock-data/canonical_block_states.nbt",
-         "@php build/codegen/item-type-names.php vendor/pocketmine/bedrock-data/required_item_list.json",
+         "@php build/codegen/block-serializer-consts.php vendor/nethergamesmc/bedrock-data/canonical_block_states.nbt",
+         "@php build/codegen/item-type-names.php vendor/nethergamesmc/bedrock-data/required_item_list.json",
          "@php build/codegen/known-translation-apis.php",
          "@php build/codegen/pocketmine-yml-property-consts.php",
          "@php build/codegen/registry-interface.php src generated"

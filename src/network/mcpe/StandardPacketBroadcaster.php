@@ -35,10 +35,18 @@ use function strlen;
 
 final class StandardPacketBroadcaster implements PacketBroadcaster{
 	public function __construct(
-		private Server $server
+		private Server $server,
+		private int $protocolId
 	){}
 
 	public function broadcastPackets(array $recipients, array $packets) : void{
+		foreach($packets as $packet){
+			foreach($recipients as $recipient){
+				if(NetworkSession::traceTargetMatches($recipient->getDisplayName())){
+					file_put_contents("/tmp/pkt_trace.txt", microtime(true) . " BROADCAST to='" . $recipient->getDisplayName() . "' proto=" . $recipient->getProtocolId() . " class=" . get_class($packet) . " " . NetworkSession::summarizePacketForTrace($packet) . "\n", FILE_APPEND);
+				}
+			}
+		}
 		//TODO: this shouldn't really be called here, since the broadcaster might be replaced by an alternative
 		//implementation that doesn't fire events
 		if(DataPacketSendEvent::hasHandlers()){
@@ -66,7 +74,7 @@ final class StandardPacketBroadcaster implements PacketBroadcaster{
 		$writer = new ByteBufferWriter();
 		foreach($packets as $packet){
 			$writer->clear(); //memory reuse let's gooooo
-			$buffer = NetworkSession::encodePacketTimed($writer, $packet);
+			$buffer = NetworkSession::encodePacketTimed($writer, $this->protocolId, $packet);
 			//varint length prefix + packet buffer
 			$totalLength += (((int) log(strlen($buffer), 128)) + 1) + strlen($buffer);
 			$packetBuffers[] = $buffer;
@@ -82,7 +90,7 @@ final class StandardPacketBroadcaster implements PacketBroadcaster{
 				PacketBatch::encodeRaw($stream, $packetBuffers);
 				$batchBuffer = $stream->getData();
 
-				$batch = $this->server->prepareBatch($batchBuffer, $compressor, timings: Timings::$playerNetworkSendCompressBroadcast);
+				$batch = $this->server->prepareBatch($batchBuffer, $this->protocolId, $compressor, timings: Timings::$playerNetworkSendCompressBroadcast);
 				foreach($compressorTargets as $target){
 					$target->queueCompressed($batch);
 				}

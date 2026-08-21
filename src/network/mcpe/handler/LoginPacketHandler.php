@@ -27,16 +27,20 @@ use pocketmine\entity\InvalidSkinException;
 use pocketmine\event\player\PlayerPreLoginEvent;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
+use pocketmine\network\mcpe\auth\ProcessLegacyLoginTask;
 use pocketmine\network\mcpe\auth\ProcessOpenIdLoginTask;
 use pocketmine\network\mcpe\auth\ProcessSelfSignedLoginTask;
 use pocketmine\network\mcpe\JwtException;
 use pocketmine\network\mcpe\JwtUtils;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\LoginPacket;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\types\login\AuthenticationInfo;
 use pocketmine\network\mcpe\protocol\types\login\AuthenticationType;
 use pocketmine\network\mcpe\protocol\types\login\clientdata\ClientData;
 use pocketmine\network\mcpe\protocol\types\login\clientdata\ClientDataToSkinDataHelper;
+use pocketmine\network\mcpe\protocol\types\login\legacy\LegacyAuthChain;
+use pocketmine\network\mcpe\protocol\types\login\legacy\LegacyAuthIdentityData;
 use pocketmine\network\mcpe\protocol\types\login\openid\SelfSignedJwtBody;
 use pocketmine\network\mcpe\protocol\types\login\openid\XboxAuthJwtBody;
 use pocketmine\network\mcpe\protocol\types\login\openid\XboxAuthJwtHeader;
@@ -50,7 +54,9 @@ use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use function base64_decode;
 use function chr;
+use function count;
 use function gettype;
+use function is_array;
 use function is_object;
 use function json_decode;
 use function md5;
@@ -82,7 +88,17 @@ class LoginPacketHandler extends PacketHandler{
 	}
 
 	public function handleLogin(LoginPacket $packet) : bool{
-		$authInfo = $this->parseAuthInfo($packet->authInfoJson);
+		if($this->session->getProtocolId() >= ProtocolInfo::PROTOCOL_1_21_93){
+			$authInfo = $this->parseAuthInfo($packet->authInfoJson);
+		}elseif($this->session->getProtocolId() >= ProtocolInfo::PROTOCOL_1_21_90){
+			$authInfo = $this->parseAuthInfo($packet->authInfoJson);
+			$authInfo->AuthenticationType = AuthenticationType::SELF_SIGNED->value;
+		}else{
+			$authInfo = new AuthenticationInfo();
+			$authInfo->AuthenticationType = AuthenticationType::SELF_SIGNED->value;
+			$authInfo->Certificate = $packet->authInfoJson;
+			$authInfo->Token = "";
+		}
 
 		if($authInfo->AuthenticationType === AuthenticationType::FULL->value){
 			try{
@@ -105,31 +121,107 @@ class LoginPacketHandler extends PacketHandler{
 			$this->processOpenIdLogin($authInfo->Token, $header->kid, $packet->clientDataJwt, $authRequired);
 
 		}elseif($authInfo->AuthenticationType === AuthenticationType::SELF_SIGNED->value){
-			try{
-				[, $claimsArray, ] = JwtUtils::parse($authInfo->Token);
-			}catch(JwtException $e){
-				throw PacketHandlingException::wrap($e, "Error parsing self-signed authentication token");
-			}
-			$claims = $this->mapSelfSignedTokenBody($claimsArray);
+			if($this->session->getProtocolId() >= ProtocolInfo::PROTOCOL_1_26_20){
+				try{
+					[, $claimsArray, ] = JwtUtils::parse($authInfo->Token);
+				}catch(JwtException $e){
+					throw PacketHandlingException::wrap($e, "Error parsing self-signed authentication token");
+				}
+				$claims = $this->mapSelfSignedTokenBody($claimsArray);
 
-			if(!Uuid::isValid($claims->leguuid)){
-				throw new PacketHandlingException("Invalid UUID string in self-signed certificate: " . $claims->leguuid);
-			}
-			$legacyUuid = Uuid::fromString($claims->leguuid);
-			$username = $claims->xname;
-			$xuid = "";
+				if(!Uuid::isValid($claims->leguuid)){
+					throw new PacketHandlingException("Invalid UUID string in self-signed certificate: " . $claims->leguuid);
+				}
 
-			$selfSignedKey = base64_decode($claims->cpk, strict: true);
-			if($selfSignedKey === false){
-				throw new PacketHandlingException("Invalid self-signed key");
-			}
+				$legacyUuid = Uuid::fromString($claims->leguuid);
+				$username = $claims->xname;
+				$xuid = "";
 
-			$authRequired = $this->processLoginCommon($packet, $username, $legacyUuid, $xuid);
-			if($authRequired === null){
-				//plugin cancelled
-				return true;
+				$selfSignedKey = base64_decode($claims->cpk, strict: true);
+				if($selfSignedKey === false){
+					throw new PacketHandlingException("Invalid self-signed key");
+				}
+
+				$authRequired = $this->processLoginCommon($packet, $username, $legacyUuid, $xuid);
+				if($authRequired === null){
+					//plugin cancelled
+					return true;
+				}
+				$this->processSelfSignedLogin($authInfo->Token, $selfSignedKey, $packet->clientDataJwt, $authRequired);
+			}else{
+				try{
+					$chainData = json_decode($authInfo->Certificate, flags: JSON_THROW_ON_ERROR);
+				}catch(\JsonException $e){
+					throw PacketHandlingException::wrap($e, "Error parsing self-signed certificate chain");
+				}
+				if(!is_object($chainData)){
+					throw new PacketHandlingException("Unexpected type for self-signed certificate chain: " . gettype($chainData) . ", expected object");
+				}
+				try{
+					$chain = $this->defaultJsonMapper("Self-signed auth chain JSON")->map($chainData, new LegacyAuthChain());
+				}catch(\JsonMapper_Exception $e){
+					throw PacketHandlingException::wrap($e, "Error mapping self-signed certificate chain");
+				}
+				if($this->session->getProtocolId() >= ProtocolInfo::PROTOCOL_1_21_93){
+					if(count($chain->chain) > 1 || !isset($chain->chain[0])){
+						throw new PacketHandlingException("Expected exactly one certificate in self-signed certificate chain, got " . count($chain->chain));
+					}
+
+					try{
+						[, $claimsArray, ] = JwtUtils::parse($chain->chain[0]);
+					}catch(JwtException $e){
+						throw PacketHandlingException::wrap($e, "Error parsing self-signed certificate");
+					}
+					if(!isset($claimsArray["extraData"]) || !is_array($claimsArray["extraData"])){
+						throw new PacketHandlingException("Expected \"extraData\" to be present in self-signed certificate");
+					}
+				}else{
+					$claimsArray = null;
+
+					foreach($chain->chain as $jwt){
+						try{
+							[, $claims, ] = JwtUtils::parse($jwt);
+						}catch(JwtException $e){
+							throw PacketHandlingException::wrap($e, "Error parsing legacy certificate");
+						}
+						if(isset($claims["extraData"])){
+							if($claimsArray !== null){
+								throw new PacketHandlingException("Multiple certificates in self-signed certificate chain contain \"extraData\" field");
+							}
+
+							if(!is_array($claims["extraData"])){
+								throw new PacketHandlingException("'extraData' key should be an array");
+							}
+
+							$claimsArray = $claims;
+						}
+					}
+
+					if($claimsArray === null){
+						throw new PacketHandlingException("'extraData' not found in legacy chain data");
+					}
+				}
+
+				try{
+					$claims = $this->defaultJsonMapper("Self-signed auth JWT 'extraData'")->map($claimsArray["extraData"], new LegacyAuthIdentityData());
+				}catch(\JsonMapper_Exception $e){
+					throw PacketHandlingException::wrap($e, "Error mapping self-signed certificate extraData");
+				}
+
+				if(!Uuid::isValid($claims->identity)){
+					throw new PacketHandlingException("Invalid UUID string in self-signed certificate: " . $claims->identity);
+				}
+				$legacyUuid = Uuid::fromString($claims->identity);
+				$username = $claims->displayName;
+				$xuid = $this->session->getProtocolId() >= ProtocolInfo::PROTOCOL_1_21_93 ? "" : $claims->XUID;
+
+				$authRequired = $this->processLoginCommon($packet, $username, $legacyUuid, $xuid);
+				if($authRequired === null){
+					//plugin cancelled
+					return true;
+				}
+				$this->processLegacySelfSignedLogin($chain->chain, $packet->clientDataJwt, $authRequired);
 			}
-			$this->processSelfSignedLogin($authInfo->Token, $selfSignedKey, $packet->clientDataJwt, $authRequired);
 		}else{
 			throw new PacketHandlingException("Unsupported authentication type: $authInfo->AuthenticationType");
 		}
@@ -145,6 +237,51 @@ class LoginPacketHandler extends PacketHandler{
 		}
 
 		$clientData = $this->parseClientData($packet->clientDataJwt);
+
+		//protocol >= 1.26.40 (2168) disconnects the client itself (and, observed in
+		//production, kicks every other online player too) a moment after spawning if it
+		//logs in with a Persona skin (Bedrock's "randomized default character" system -
+		//what a player gets if they've never set a custom skin, or a marketplace/
+		//customizable skin left in its default state). Confirmed live: switching to any
+		//non-Persona custom skin fixes it, no server-side exception is ever thrown
+		//anywhere in the skin conversion path, and this still happens even logging in alone
+		//with no other players online, so it isn't specifically about being shown to others.
+		//Also tested replaying the real decoded Persona SkinData (instead of a random-noise
+		//placeholder) to any viewer, matching how BetterAltay - another PMMP fork with 2168
+		//as its primary protocol - handles it: made no difference, same crash, same timing.
+		//This is consistent with Bedrock's own "multiplayer restricted skin" client-side
+		//policy (see official 26.40 changelog / Mojang support docs) rather than anything
+		//we send being wrong - other established Bedrock server software (Hive, CubeCraft)
+		//disables Persona skins entirely for the same reason.
+		//
+		//PersonaSkin=true only covers the *modern* random-character system. The *classic*
+		//default skin pack (Steve/Alex/Ari/Noor/Efe/Kai/Zuri/Sunny/Makena, PersonaSkin=false,
+		//skinId prefix 'c18e65aa-7b21-4637-9b63-8ad63622ef01.') triggers the exact same
+		//crash for 2168.
+		//
+		//IMPORTANT: this is 2168-ONLY. 2026-08-10/13 investigation initially (wrongly)
+		//extended this same check down to protocol 975/1001 (1.26.20-1.26.33) after
+		//observing what looked like an identical crash there - but that crash turned out to
+		//be an unrelated bug (missing "variant" field + wrong VarInt signedness in
+		//CommonTypes::putNetworkItemStackDescriptor(), used by MobEquipmentPacket/
+		//InventorySlotPacket/InventoryContentPacket - see BedrockProtocol commits be47df5
+		//and 5f914f1). Confirmed live 2026-08-13, with that encoding bug fixed: the exact
+		//same default/Persona skin connects fine on 975/1001 with zero issue, while the
+		//identical skin STILL crashes on 2168 with this check fully disabled - proving the
+		//975/1001 case was a false positive and the 2168 case is a genuine, separate,
+		//client-side restriction. Do not re-extend this below PROTOCOL_1_26_40 without new
+		//live evidence.
+		if(
+			($clientData->PersonaSkin || str_starts_with($clientData->SkinId, "c18e65aa-7b21-4637-9b63-8ad63622ef01."))
+			&& $this->session->getProtocolId() >= ProtocolInfo::PROTOCOL_1_26_40
+		){
+			$this->session->disconnectWithError(
+				reason: "Default/random skin not supported on this protocol version",
+				disconnectScreenMessage: "Please set a custom skin before joining (default/random characters aren't supported yet on your Minecraft version)."
+			);
+
+			return null;
+		}
 
 		try{
 			$skin = $this->session->getTypeConverter()->getSkinAdapter()->fromSkinData(ClientDataToSkinDataHelper::fromClientData($clientData));
@@ -179,8 +316,7 @@ class LoginPacketHandler extends PacketHandler{
 
 		$ev = new PlayerPreLoginEvent(
 			$playerInfo,
-			$this->session->getIp(),
-			$this->session->getPort(),
+			$this->session,
 			$this->server->requiresAuthentication()
 		);
 		if($this->server->getNetwork()->getValidConnectionCount() > $this->server->getMaxPlayers()){
@@ -318,6 +454,19 @@ class LoginPacketHandler extends PacketHandler{
 		$this->session->setHandler(null); //drop packets received during login verification
 
 		$this->server->getAsyncPool()->submitTask(new ProcessSelfSignedLoginTask($token, $clientPublicKey, $clientData, $authRequired, onCompletion: $this->authCallback));
+	}
+
+	/**
+	 * @param string[] $legacyCertificate
+	 */
+	protected function processLegacySelfSignedLogin(array $legacyCertificate, string $clientDataJwt, bool $authRequired) : void{
+		$this->session->setHandler(null); //drop packets received during login verification
+
+		$rootAuthKeyDer = $this->session->getProtocolId() >= ProtocolInfo::PROTOCOL_1_21_93 ? null : base64_decode(ProcessLegacyLoginTask::LEGACY_MOJANG_ROOT_PUBLIC_KEY, true);
+		if($rootAuthKeyDer === false){ //should never happen unless the constant is messed up
+			throw new \InvalidArgumentException("Failed to base64-decode hardcoded Mojang root public key");
+		}
+		$this->server->getAsyncPool()->submitTask(new ProcessLegacyLoginTask($legacyCertificate, $clientDataJwt, rootAuthKeyDer: $rootAuthKeyDer, authRequired: $authRequired, onCompletion: $this->authCallback));
 	}
 
 	private function defaultJsonMapper(string $logContext) : \JsonMapper{

@@ -90,9 +90,20 @@ function buildPhar(string $pharPath, string $basePath, array $includedPaths, arr
 	$phar->startBuffering();
 
 	//If paths contain any of these, they will be excluded
-	$excludedSubstrings = preg_quote_array([
-		realpath($pharPath), //don't add the phar to itself
-	], '/');
+		$excludedSubstrings = preg_quote_array([
+			realpath($pharPath), //don't add the phar to itself
+		], '/');
+
+		// Optional low-disk build: keep current Bedrock data, but omit historical
+		// conversion snapshots which are only needed when upgrading very old worlds.
+		if(getenv('RYXMC_MINIMAL_PHAR') === '1'){
+			$excludedSubstrings = array_merge($excludedSubstrings, preg_quote_array([
+				DIRECTORY_SEPARATOR . 'canonical_block_states-' . '1.',
+				DIRECTORY_SEPARATOR . 'required_item_list-' . '1.',
+				DIRECTORY_SEPARATOR . 'block_state_meta_map-' . '1.',
+				DIRECTORY_SEPARATOR . 'r12_to_current_block_map-' . '1.'
+			], '/'));
+		}
 
 	$folderPatterns = preg_quote_array([
 		DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR,

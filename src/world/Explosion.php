@@ -277,7 +277,7 @@ class Explosion{
 	/**
 	 * Returns the explosion exposure of an entity, used to calculate explosion impact.
 	 */
-	private function getExposure(Vector3 $origin, Entity $entity) : float{
+	protected function getExposure(Vector3 $origin, Entity $entity) : float{
 		$bb = $entity->getBoundingBox();
 
 		$diff = (new Vector3($bb->getXLength(), $bb->getYLength(), $bb->getZLength()))->multiply(2)->add(1, 1, 1);

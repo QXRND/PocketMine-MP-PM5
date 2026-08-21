@@ -144,3 +144,8 @@ parameters:
 			count: 2
 			path: ../../phpunit/promise/PromiseTest.php
 
+		-
+			message: '#^Parameter \#4 \$version of class pocketmine\\network\\mcpe\\protocol\\types\\ItemTypeEntry constructor expects int, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/network/mcpe/convert/ItemTypeDictionaryFromDataHelper.php

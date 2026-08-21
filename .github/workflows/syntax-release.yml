@@ -1,0 +1,73 @@
+name: SyntaxStudios release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+env:
+  PHP_VERSION: "8.3"
+
+jobs:
+  release:
+    name: Build and publish release
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: true
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@2.37.1
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+
+      - name: Restore Composer package cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.cache/composer/files
+            ~/.cache/composer/vcs
+          key: "composer-v2-cache-${{ hashFiles('./composer.lock') }}"
+          restore-keys: |
+            composer-v2-cache-
+
+      - name: Install Composer dependencies
+        run: composer install --no-dev --classmap-authoritative --prefer-dist --no-interaction --ignore-platform-reqs
+
+      - name: Minify BedrockData JSON files
+        run: php vendor/nethergamesmc/bedrock-data/.minify_json.php
+
+      - name: Build PocketMine-MP.phar
+        run: php -dphar.readonly=0 build/server-phar.php --git ${{ github.sha }}
+
+      - name: Package release bundle
+        id: package
+        run: |
+          tag="${{ github.ref_type == 'tag' && github.ref_name || format('dev-{0}', github.sha) }}"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          bundle_dir="SyntaxStudios-PocketMine-MP-$tag"
+          mkdir -p "$bundle_dir"
+          cp PocketMine-MP.phar "$bundle_dir/"
+          cp start.sh start.cmd start.ps1 "$bundle_dir/"
+          tar -czf "$bundle_dir.tar.gz" "$bundle_dir"
+          echo "bundle_name=$bundle_dir" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub release
+        if: github.ref_type == 'tag'
+        uses: ncipollo/release-action@v1.21.0
+        with:
+          artifacts: "PocketMine-MP.phar,start.sh,start.cmd,start.ps1,${{ steps.package.outputs.bundle_name }}.tar.gz"
+          commit: ${{ github.sha }}
+          draft: true
+          name: "SyntaxStudios PocketMine-MP ${{ github.ref_name }}"
+          tag: ${{ github.ref_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            See [CHANGELOG.md](${{ github.server_url }}/${{ github.repository }}/blob/${{ github.ref_name }}/CHANGELOG.md) for what's new.
+
+            :information_source: `PocketMine-MP.phar` needs a PMMP-compiled PHP build to run, not stock PHP. Download the recommended binary [here](https://github.com/pmmp/PHP-Binaries/releases/tag/pm5-php-${{ env.PHP_VERSION }}-latest).
+
+            :warning: Found a bug? Report it on our [issue tracker](${{ github.server_url }}/${{ github.repository }}/issues).
