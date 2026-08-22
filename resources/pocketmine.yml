@@ -7,6 +7,8 @@ settings:
   #Whether to send all strings translated to server locale or let the device handle them
   force-language: false
   shutdown-message: "Server closed"
+  #Name shown inside the [ ] prefix for messages sent with /say from the console
+  say-prefix: "Server"
   #Allow listing plugins via Query
   query-plugins: true
   #Enable plugin and core profiling by default

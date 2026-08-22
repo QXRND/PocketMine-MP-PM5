@@ -8,7 +8,6 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
-use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\GameMode;
 use function count;
 
@@ -24,11 +23,11 @@ final class GamemodeShortcutCommand extends VanillaCommand{
 			GameMode::SURVIVAL => "Changes the player to Survival mode",
 		};
 		parent::__construct($name, $description, "/{$name} [player]");
-		$this->setPermission(DefaultPermissions::ROOT_OPERATOR);
+		$this->setPermissions([DefaultPermissionNames::COMMAND_GAMEMODE_SELF, DefaultPermissionNames::COMMAND_GAMEMODE_OTHER]);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		$target = $this->fetchPermittedPlayerTarget($sender, $args[0] ?? null, DefaultPermissions::ROOT_OPERATOR, DefaultPermissions::ROOT_OPERATOR);
+		$target = $this->fetchPermittedPlayerTarget($sender, $args[0] ?? null, DefaultPermissionNames::COMMAND_GAMEMODE_SELF, DefaultPermissionNames::COMMAND_GAMEMODE_OTHER);
 		if($target === null){
 			return true;
 		}

@@ -49,8 +49,9 @@ class SayCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
+		$senderName = $sender instanceof Player ? $sender->getDisplayName() : ($sender instanceof ConsoleCommandSender ? $sender->getServer()->getConfigGroup()->getPropertyString("settings.say-prefix", "Server") : $sender->getName());
 		$sender->getServer()->broadcastMessage(KnownTranslationFactory::chat_type_announcement(
-			$sender instanceof Player ? $sender->getDisplayName() : ($sender instanceof ConsoleCommandSender ? "Server" : $sender->getName()),
+			$senderName,
 			implode(" ", $args)
 		)->prefix(TextFormat::LIGHT_PURPLE));
 		return true;
