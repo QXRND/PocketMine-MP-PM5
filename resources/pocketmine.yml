@@ -8,7 +8,7 @@ settings:
   force-language: false
   shutdown-message: "Server closed"
   #Name shown inside the [ ] prefix for messages sent with /say from the console
-  say-prefix: "Server"
+  say-prefix: "QXRND"
   #Allow listing plugins via Query
   query-plugins: true
   #Enable plugin and core profiling by default

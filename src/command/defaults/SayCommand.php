@@ -49,7 +49,7 @@ class SayCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$senderName = $sender instanceof Player ? $sender->getDisplayName() : ($sender instanceof ConsoleCommandSender ? $sender->getServer()->getConfigGroup()->getPropertyString("settings.say-prefix", "Server") : $sender->getName());
+		$senderName = $sender instanceof Player ? $sender->getDisplayName() : ($sender instanceof ConsoleCommandSender ? $sender->getServer()->getConfigGroup()->getPropertyString("settings.say-prefix", "QXRND") : $sender->getName());
 		$sender->getServer()->broadcastMessage(KnownTranslationFactory::chat_type_announcement(
 			$senderName,
 			implode(" ", $args)
