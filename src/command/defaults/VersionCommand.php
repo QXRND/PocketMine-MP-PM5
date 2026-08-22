@@ -56,17 +56,18 @@ class VersionCommand extends VanillaCommand{
 			$jitMode = Utils::getOpcacheJitMode();
 			$jitText = $jitMode === null ? "Unavailable" : ($jitMode === 0 ? "Disabled" : "Enabled");
 
-			$sender->sendMessage(TextFormat::DARK_AQUA . "✦ " . TextFormat::AQUA . "QXRND - PocketMine-MP" . TextFormat::WHITE . " Network");
+			$sender->sendMessage(TextFormat::DARK_AQUA . "" . TextFormat::AQUA . "QXRND - PocketMine-MP" . TextFormat::WHITE . " Network");
 			$sender->sendMessage(TextFormat::GRAY . "  Server information");
 			$sender->sendMessage(TextFormat::BLUE . "------------------------------");
 			$sender->sendMessage(TextFormat::AQUA . "Server    " . TextFormat::WHITE . "> " . TextFormat::AQUA . VersionInfo::NAME);
-			$sender->sendMessage(TextFormat::AQUA . "Version   " . TextFormat::WHITE . "> " . $versionColor . VersionInfo::VERSION()->getFullVersion());
+			$sender->sendMessage(TextFormat::AQUA . "API       " . TextFormat::WHITE . "> " . $versionColor . "5.44.5 (PM5)");
 			$sender->sendMessage(TextFormat::AQUA . "Author    " . TextFormat::WHITE . "> " . TextFormat::GOLD . "DevPapo");
-			$sender->sendMessage(TextFormat::AQUA . "Platform  " . TextFormat::WHITE . " > " . TextFormat::GREEN . "Minecraft Bedrock");
+			$sender->sendMessage(TextFormat::AQUA . "Platform  " . TextFormat::WHITE . "> " . TextFormat::GREEN . "Minecraft Bedrock");
 			$sender->sendMessage(TextFormat::AQUA . "Bedrock   " . TextFormat::WHITE . "> " . TextFormat::GREEN . ProtocolInfo::MINECRAFT_VERSION_NETWORK . TextFormat::GRAY . " (protocol " . ProtocolInfo::CURRENT_PROTOCOL . ")");
 			$sender->sendMessage(TextFormat::AQUA . "PHP       " . TextFormat::WHITE . "> " . TextFormat::GREEN . PHP_VERSION);
 			$sender->sendMessage(TextFormat::AQUA . "System    " . TextFormat::WHITE . "> " . TextFormat::GREEN . Utils::getOS());
 			$sender->sendMessage(TextFormat::AQUA . "OPcache   " . TextFormat::WHITE . "> " . TextFormat::GREEN . "JIT " . $jitText);
+			$sender->sendMessage(TextFormat::AQUA . "Discord   " . TextFormat::WHITE . "> " . TextFormat::AQUA . VersionInfo::DISCORD_URL);
 			$sender->sendMessage(TextFormat::BLUE . "------------------------------");
 			$sender->sendMessage(TextFormat::GRAY . "Build " . TextFormat::DARK_GRAY . substr(VersionInfo::GIT_HASH(), 0, 12));
 			$sender->sendMessage(TextFormat::DARK_AQUA . "QXRND - PocketMine-MP " . TextFormat::GRAY . "- developed by " . TextFormat::GOLD . "DevPapo");
