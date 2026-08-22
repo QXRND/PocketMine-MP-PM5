@@ -53,10 +53,26 @@ class VersionCommand extends VanillaCommand{
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
 		if(count($args) === 0){
 			$versionColor = VersionInfo::IS_DEVELOPMENT_BUILD ? TextFormat::YELLOW : TextFormat::GREEN;
+			$isAbout = strtolower($commandLabel) === "about";
+			if($isAbout){
+				$sender->sendMessage(TextFormat::DARK_AQUA . "QXRND - PocketMine-MP" . TextFormat::WHITE . " ABOUT");
+				$sender->sendMessage(TextFormat::GRAY . "About this server");
+				$sender->sendMessage(TextFormat::BLUE . "------------------------------");
+				$sender->sendMessage(TextFormat::AQUA . "Name      " . TextFormat::WHITE . "> " . TextFormat::AQUA . VersionInfo::NAME);
+				$sender->sendMessage(TextFormat::AQUA . "API       " . TextFormat::WHITE . "> " . $versionColor . "5.44.5 (PM5)");
+				$sender->sendMessage(TextFormat::AQUA . "Author    " . TextFormat::WHITE . "> " . TextFormat::GOLD . "DevPapo");
+				$sender->sendMessage(TextFormat::AQUA . "Minecraft " . TextFormat::WHITE . "> " . TextFormat::GREEN . ProtocolInfo::MINECRAFT_VERSION_NETWORK);
+				$sender->sendMessage(TextFormat::AQUA . "Protocol  " . TextFormat::WHITE . "> " . TextFormat::GREEN . ProtocolInfo::CURRENT_PROTOCOL);
+				$sender->sendMessage(TextFormat::AQUA . "Discord   " . TextFormat::WHITE . "> " . TextFormat::AQUA . VersionInfo::DISCORD_URL);
+				$sender->sendMessage(TextFormat::BLUE . "------------------------------");
+				$sender->sendMessage(TextFormat::GRAY . "QXRND - PocketMine-MP support");
+				return true;
+			}
+
 			$jitMode = Utils::getOpcacheJitMode();
 			$jitText = $jitMode === null ? "Unavailable" : ($jitMode === 0 ? "Disabled" : "Enabled");
 
-			$sender->sendMessage(TextFormat::DARK_AQUA . "" . TextFormat::AQUA . "QXRND - PocketMine-MP" . TextFormat::WHITE . " Network");
+			$sender->sendMessage(TextFormat::DARK_AQUA . "QXRND - PocketMine-MP" . TextFormat::WHITE . " VERSION");
 			$sender->sendMessage(TextFormat::GRAY . "  Server information");
 			$sender->sendMessage(TextFormat::BLUE . "------------------------------");
 			$sender->sendMessage(TextFormat::AQUA . "Server    " . TextFormat::WHITE . "> " . TextFormat::AQUA . VersionInfo::NAME);

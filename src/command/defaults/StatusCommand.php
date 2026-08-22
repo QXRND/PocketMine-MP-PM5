@@ -68,7 +68,7 @@ class StatusCommand extends VanillaCommand{
 		$mUsage = Process::getAdvancedMemoryUsage();
 
 		$server = $sender->getServer();
-			$sender->sendMessage(TextFormat::DARK_AQUA . "✦ " . TextFormat::AQUA . "QXRND - PocketMine-MP" . TextFormat::WHITE . " STATUS");
+			$sender->sendMessage(TextFormat::DARK_AQUA . "" . TextFormat::AQUA . "QXRND - PocketMine-MP" . TextFormat::WHITE . " STATUS");
 			$sender->sendMessage(TextFormat::GRAY . "  Real-time performance");
 			$sender->sendMessage(TextFormat::BLUE . "------------------------------");
 
@@ -130,7 +130,6 @@ class StatusCommand extends VanillaCommand{
 			}
 
 			$sender->sendMessage(TextFormat::BLUE . "------------------------------");
-			$sender->sendMessage(TextFormat::DARK_AQUA . "Support: " . TextFormat::AQUA . VersionInfo::DISCORD_URL);
 
 			return true;
 	}
