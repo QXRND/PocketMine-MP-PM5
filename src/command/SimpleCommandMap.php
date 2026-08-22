@@ -34,6 +34,7 @@ use pocketmine\command\defaults\DumpMemoryCommand;
 use pocketmine\command\defaults\EffectCommand;
 use pocketmine\command\defaults\EnchantCommand;
 use pocketmine\command\defaults\GamemodeCommand;
+use pocketmine\command\defaults\GamemodeShortcutCommand;
 use pocketmine\command\defaults\GarbageCollectorCommand;
 use pocketmine\command\defaults\GiveCommand;
 use pocketmine\command\defaults\HelpCommand;
@@ -106,6 +107,10 @@ class SimpleCommandMap implements CommandMap{
 			new EffectCommand(),
 			new EnchantCommand(),
 			new GamemodeCommand(),
+			new GamemodeShortcutCommand("gma", \pocketmine\player\GameMode::ADVENTURE),
+			new GamemodeShortcutCommand("gmsp", \pocketmine\player\GameMode::SPECTATOR),
+			new GamemodeShortcutCommand("gmc", \pocketmine\player\GameMode::CREATIVE),
+			new GamemodeShortcutCommand("gms", \pocketmine\player\GameMode::SURVIVAL),
 			new GarbageCollectorCommand(),
 			new GiveCommand(),
 			new HelpCommand(),
