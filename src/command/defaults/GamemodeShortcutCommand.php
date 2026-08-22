@@ -16,7 +16,13 @@ final class GamemodeShortcutCommand extends VanillaCommand{
 		string $name,
 		private GameMode $gameMode
 	){
-		parent::__construct($name, KnownTranslationFactory::pocketmine_command_gamemode_description(), "/{$name} [player]");
+		$description = match($gameMode){
+			GameMode::ADVENTURE => "Changes the player to Adventure mode",
+			GameMode::SPECTATOR => "Changes the player to Spectator mode",
+			GameMode::CREATIVE => "Changes the player to Creative mode",
+			GameMode::SURVIVAL => "Changes the player to Survival mode",
+		};
+		parent::__construct($name, $description, "/{$name} [player]");
 		$this->setPermissions([
 			DefaultPermissionNames::COMMAND_GAMEMODE_SELF,
 			DefaultPermissionNames::COMMAND_GAMEMODE_OTHER
