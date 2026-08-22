@@ -181,6 +181,12 @@ aliases:
   #showtheversion: [version]
   #savestop: [save-all, stop]
 
+  ##Quick gamemode shortcuts:
+  gma: [gamemode adventure]
+  gmsp: [gamemode spectator]
+  gmc: [gamemode creative]
+  gms: [gamemode survival]
+
   ##To invoke another command with arguments, use $1 to pass the first argument, $2 for the second etc:
   #giveadmin: [op $1] ## `giveadmin alex` -> `op alex`
   #kill: [suicide, say "I tried to kill $1"] ## `kill alex` -> `suicide` + `say "I tried to kill alex"`

@@ -85,6 +85,17 @@ SyntaxStudios, NetherGamesMC and pmmp/PocketMine are not affiliated with Mojang.
 
 El egg descarga automáticamente el release más reciente de este repositorio cuando se selecciona `PM5`. Este release utiliza API 5.44.5, Bedrock 1.26.44 y protocolo 2168. El PHAR reducido evita errores de espacio durante la descompresión en Pterodactyl. Para publicar una actualización, sube un nuevo release con un asset llamado `PocketMine-MP.phar`.
 
+## Gamemode shortcuts
+
+The following shortcuts are available in PM5:
+
+| Command | Gamemode |
+|---|---|
+| `gma` | Adventure |
+| `gmsp` | Spectator |
+| `gmc` | Creative |
+| `gms` | Survival |
+
 Autor de la distribución: DevPapo  
 Soporte: admin@scon.host  
 Discord: https://discord.gg/qhUXn72rGB
