@@ -1,101 +1,108 @@
-# End of support announcement
+# QXRND - PocketMine-MP PM5
 
-Hello all,
+![Platform](https://img.shields.io/badge/platform-Minecraft%20Bedrock-55C2E6)
+![API](https://img.shields.io/badge/API-5.44.5-2F81F7)
+![Protocol](https://img.shields.io/badge/protocol-2168-6F42C1)
+![Runtime](https://img.shields.io/badge/PHP-8.2-777BB4)
 
-As some of you may know, @driesboy recently decided to leave Minecraft behind as he pursues other interests. While I wish him the best, unfortunately, this now means that no one is left on the team willing to do updates for new Minecraft versions.
+QXRND - PocketMine-MP PM5 is a downstream PocketMine-MP distribution targeting the PM5 plugin API and Minecraft Bedrock 1.26.44. It is derived from the PocketMine-MP ecosystem and carries QXRND-specific protocol, packaging, branding, and operational changes. It is not an official upstream PocketMine-MP release and is not affiliated with Mojang, Microsoft, or the PocketMine-MP maintainers.
 
-We've assembled some [documentation](https://doc.pmmp.io/en/rtfd/developers/internals-docs/updating-minecraft-protocol.html) on the update process to help anyone who wants to make a fork to continue updating PM themselves. However, no further updates will be provided by the PMMP team.
+This repository is intended for maintainers and operators who require a PM5-compatible server runtime with a fixed Bedrock protocol target and a reproducible PHAR distribution.
 
-I want to say a huge thank you for the outstanding support of the Lifeboat Network for supporting the development of the project financially these last few years.
-While they could've hired us to go closed-source and kept everything for themselves, they instead agreed to let us share the work we were doing with the public community with no strings attached, and didn't even ask for any recognition in return. Their generosity has allowed many servers to flourish over the last few years.
+## Release profile
 
-A huge thank you is also owed to the members of the PMMP team, past and present, including developers, community moderators, and code reviewers. It has taken a huge amount of unpaid voluntary work by many people to keep this project going for so long, work that has often been taken for granted by the community.
-
-I would also like to thank those who have supported me on Patreon, however small the amount. You guys have been truly generous, by paying to support a project that you didn't have to, for almost nothing in return except a fancy Discord role.
-
-Finally, thank you to you, the community, for using PocketMine-MP and making cool things with it, reporting bugs, making pull requests, and trying to make the world a better place.
-
-Peace out,
-Dylan / dktapps / the black cat
-
----
-
-<p align="center">
-	<a href="https://github.com/SyntaxStudiosRE">
-		<picture>
-			<source srcset="https://raw.githubusercontent.com/pmmp/PocketMine-MP/stable/.github/readme/pocketmine-dark-rgb.gif" media="(prefers-color-scheme: dark)">
-			<img src="https://raw.githubusercontent.com/pmmp/PocketMine-MP/stable/.github/readme/pocketmine-rgb.gif" loading="eager" />
-		</picture>
-	</a><br>
-	<b>SyntaxStudios' fork of PocketMine-MP — a highly customisable server software for Minecraft: Bedrock Edition written in PHP</b>
-</p>
-
-<p align="center">
-	<a href="https://github.com/SyntaxStudiosRE/PocketMine-MP/actions/workflows/main.yml"><img src="https://github.com/SyntaxStudiosRE/PocketMine-MP/actions/workflows/main.yml/badge.svg" alt="CI" /></a>
-	<a href="https://github.com/SyntaxStudiosRE/PocketMine-MP/releases/latest"><img alt="GitHub release (latest SemVer)" src="https://img.shields.io/github/v/release/SyntaxStudiosRE/PocketMine-MP?label=release&sort=semver"></a>
-</p>
-
-## What is this?
-This is [SyntaxStudios](https://github.com/SyntaxStudiosRE)' maintained fork of **PocketMine-MP**, a highly customisable server software for Minecraft: Bedrock Edition, built from scratch in PHP.
-
-We maintain this fork to power our own Bedrock servers (including **Legacy**). It's based on [NetherGamesMC's multi-protocol fork](https://github.com/NetherGamesMC/PocketMine-MP), which in turn descends from the original [pmmp/PocketMine-MP](https://github.com/pmmp/PocketMine-MP).
-
-- 🧩 **Powerful plugin API** - extend and customise gameplay as you see fit
-- 🌐 **Multi-world support** - offer a more varied game experience to players without transferring them to other server nodes
-- 🏎️ **Performance** - get 100+ players onto one server (depending on hardware and plugins)
-- 🔀 **Multi-protocol** - built on NetherGamesMC's multi-protocol base, extended by us with **native support for Bedrock 1.26.40/42 (protocol 2168)** running simultaneously alongside 1.26.20-33 (975/1001) and 1.21.111 (844) - no proxy layer involved
-
-## Why we're sharing this
-When Bedrock 1.26.40 shipped, none of the multi-protocol PMMP forks we depend on had support for it yet, and pmmp/PocketMine-MP itself had already been archived. Rather than run a translation proxy in front of an older server build, we added native 2168 support directly into this fork - encoding fixes, entity/inventory/skin handling, and the packet-timing quirks specific to that client version, all reverse-engineered against the official Bedrock protocol docs and cross-checked against independent implementations (CloudburstMC/Geyser, BetterAltay).
-
-We're publishing that work because it plugs a real gap in the PMMP fork ecosystem - as far as we've found, no other multi-version fork combines 844/975/1001/2168 in the same running server - and because we'd rather see it benefit other server operators than sit unused in a private repo.
-
-## :x: PocketMine-MP is NOT a vanilla Minecraft server software.
-**It is poorly suited to hosting vanilla survival servers.**
-It doesn't have many features from the vanilla game, such as vanilla world generation, redstone, mob AI, and various other things.
-
-## Attribution & lineage
-This project would not exist without the work of the original **PMMP team** (in particular `dktapps` and `shoghicp`) and the **NetherGamesMC** development team, who maintain the multi-protocol fork this repository is based on.
-
-`pmmp/PocketMine-MP` was archived on 2026-07-09 after the team announced an end of support, having left [documentation on the protocol update process](https://doc.pmmp.io/en/rtfd/developers/internals-docs/updating-minecraft-protocol.html) for anyone wishing to continue the work. NetherGamesMC's fork remains actively maintained and is what this repository tracks.
-
-Maintained by [Giovany Sosa](https://github.com/GiovanySosa) for SyntaxStudios.
-
-## Building & Contributing
-This fork is primarily maintained for SyntaxStudios' own infrastructure, but it's public so others can use or build on the protocol work. See [BUILDING.md](BUILDING.md) for build instructions.
-
-If you're developing PMMP plugins, check out [PMMP Studio](https://marketplace.visualstudio.com/items?itemName=GiovanySosa.pmmp-studio), a VS Code extension for PocketMine-MP plugin development.
-
-## Running the server
-`PocketMine-MP.phar` **will not run on a stock PHP install.** Like upstream PMMP, it needs a PHP build with several non-default extensions (`pmmpthread`, `chunkutils2`, `leveldb`, `morton`, `encoding`, `crypto`, among others) that aren't available as regular PECL/OS packages. Use one of [pmmp/PHP-Binaries](https://github.com/pmmp/PHP-Binaries/releases)' precompiled builds (PHP 8.1-8.5, Linux/Windows/macOS) - they're compiled from the same PHP fork this project depends on, we don't maintain a separate one. Point `start.sh`/`start.cmd`/`start.ps1` at that binary instead of your system PHP.
-
-## Licensing information
-This project is licensed under **LGPL-3.0**, inherited unchanged from the upstream project. Please see the [LICENSE](/LICENSE) file for details.
-
-SyntaxStudios, NetherGamesMC and pmmp/PocketMine are not affiliated with Mojang. All brands and trademarks belong to their respective owners. This software is not Mojang-approved, nor associated with Mojang.
-
-## Enlaces de QXRND - PocketMine-MP PM5
-
-| Recurso | Enlace |
+| Component | Value |
 |---|---|
-| Código fuente editable | [QXRND/PocketMine-MP-PM5](https://github.com/QXRND/PocketMine-MP-PM5) |
-| Egg de Pterodactyl | [QXRND/PocketMine-MP-Egg](https://github.com/QXRND/PocketMine-MP-Egg) |
-| Release PM5 API 5.44.5 / 1.26.44 | [v5.44.5-qxrnd.4](https://github.com/QXRND/PocketMine-MP-PM5/releases/tag/v5.44.5-qxrnd.4) |
-| Descargar PHAR | [PocketMine-MP.phar](https://github.com/QXRND/PocketMine-MP-PM5/releases/download/v5.44.5-qxrnd.4/PocketMine-MP.phar) |
+| Distribution | QXRND - PocketMine-MP PM5 |
+| PocketMine-MP API line | 5.44.5 |
+| Bedrock network version | 1.26.44 |
+| Bedrock protocol | 2168 |
+| PHP runtime | PHP 8.2, x86_64 |
+| Stable release | [`v5.44.5-qxrnd.8`](https://github.com/QXRND/PocketMine-MP-PM5/releases/tag/v5.44.5-qxrnd.8) |
+| Distribution asset | [`PocketMine-MP.phar`](https://github.com/QXRND/PocketMine-MP-PM5/releases/download/v5.44.5-qxrnd.8/PocketMine-MP.phar) |
+| Author and maintainer | **DevPapo** |
 
-El egg descarga automáticamente el release más reciente de este repositorio cuando se selecciona `PM5`. Este release utiliza API 5.44.5, Bedrock 1.26.44 y protocolo 2168. El PHAR reducido evita errores de espacio durante la descompresión en Pterodactyl. Para publicar una actualización, sube un nuevo release con un asset llamado `PocketMine-MP.phar`.
+## Upstream lineage and design boundaries
 
-## Gamemode shortcuts
+The PM5 branch preserves the PocketMine-MP server architecture: plugin lifecycle and API contracts, command dispatch, permissions, scheduler semantics, world management, RakNet transport integration, resource-pack negotiation, and the server tick loop. QXRND changes are maintained as downstream modifications rather than presented as upstream-compatible guarantees.
 
-The following shortcuts are available in PM5:
+The Bedrock layer is pinned to protocol 2168 and its associated 1.26.44 data tables. Plugin authors should distinguish between the documented PM5 API and internal packet or data classes. Code relying on implementation details may require changes when protocol data or dependency revisions are updated.
 
-| Command | Gamemode |
+## QXRND modifications
+
+The distribution contains the following operational and source-level changes:
+
+- Minecraft Bedrock 1.26.44 and protocol 2168 support.
+- QXRND branding in server metadata, version output, startup information, and crash reports.
+- English QXRND output for `/ver`, `/about`, and `/status`, without emojis or decorative diamonds.
+- Discord support in `/ver` and `/about`; `/status` intentionally omits the support link.
+- Quick gamemode aliases: `/gma`, `/gmsp`, `/gmc`, and `/gms` for Adventure, Spectator, Creative, and Survival.
+- Gamemode aliases using the normal `/gamemode` permission nodes rather than a separate permission namespace.
+- Configurable `/say` prefix through `settings.say-prefix`, defaulting to `QXRND`.
+- Minimal PHAR packaging to reduce disk amplification during Pterodactyl's PHAR extraction process.
+- A release-oriented distribution model with one stable release asset named `PocketMine-MP.phar`.
+
+## Runtime requirements
+
+The published build requires a 64-bit Linux environment with PHP 8.2 and the extensions supplied by the PMMP-compatible PHP binary distribution. The QXRND Pterodactyl Egg is the recommended deployment path because it installs the expected runtime and invokes the PHAR through `bin/php7/bin/php`.
+
+Online-mode servers require outbound connectivity for Xbox Live authentication and Bedrock key retrieval. UDP port exposure, filesystem permissions, DNS, firewall policy, and host-level resource limits are outside the server binary's control.
+
+## Installation
+
+Download the stable PHAR and run it with the matching PHP runtime:
+
+```bash
+curl -fL -o PocketMine-MP.phar \
+  https://github.com/QXRND/PocketMine-MP-PM5/releases/download/v5.44.5-qxrnd.8/PocketMine-MP.phar
+php8.2 PocketMine-MP.phar --no-wizard
+```
+
+For Pterodactyl, import [`egg-pmmp.json`](https://github.com/QXRND/PocketMine-MP-Egg/blob/main/egg-pmmp.json), select `PM5` in the `VERSION` variable, and use **Reinstall Server** when replacing an existing installation. Changing the variable and pressing **Start** does not rerun the installation script.
+
+## Configuration
+
+The generated `pocketmine.yml` supports the following setting:
+
+```yaml
+settings:
+  say-prefix: "QXRND"
+```
+
+The value controls the prefix emitted by `/say`. Existing installations may require the key to be added manually under the `settings` mapping.
+
+## Build and packaging
+
+The repository contains the source tree, Composer lockfile, and build configuration required to produce the distribution PHAR. A minimal distribution build can be invoked with:
+
+```bash
+composer install --no-interaction
+RYXMC_MINIMAL_PHAR=1 composer run make-server --no-interaction
+```
+
+The output artifact is `PocketMine-MP.phar`. The minimal build mode excludes unnecessary historical Bedrock data to reduce extraction-time disk consumption; it does not remove the data required by the target protocol.
+
+## Plugin and protocol compatibility
+
+PM5 plugins should target the PM5 API contract and avoid depending on private implementation details. Plugins that register packet listeners, construct protocol packets, manipulate NBT directly, or assume historical item and block identifiers require integration testing against protocol 2168.
+
+Operators should validate authentication, resource-pack negotiation, inventory transactions, entity metadata, block-state translation, and custom packet handlers after changing the PHAR or dependency lockfile.
+
+## Release and update policy
+
+The stable release asset is updated in place for small fixes instead of creating a new GitHub release for every change. Consumers should always download the asset from the stable release link below and verify that the asset name is exactly `PocketMine-MP.phar`.
+
+## Support and distribution links
+
+| Resource | Link |
 |---|---|
-| `gma` | Adventure |
-| `gmsp` | Spectator |
-| `gmc` | Creative |
-| `gms` | Survival |
+| Source repository | [QXRND/PocketMine-MP-PM5](https://github.com/QXRND/PocketMine-MP-PM5) |
+| Stable release | [`v5.44.5-qxrnd.8`](https://github.com/QXRND/PocketMine-MP-PM5/releases/tag/v5.44.5-qxrnd.8) |
+| Direct PHAR download | [`PocketMine-MP.phar`](https://github.com/QXRND/PocketMine-MP-PM5/releases/download/v5.44.5-qxrnd.8/PocketMine-MP.phar) |
+| Pterodactyl Egg | [QXRND/PocketMine-MP-Egg](https://github.com/QXRND/PocketMine-MP-Egg) |
+| Technical support and invitation | [QXRND Discord](https://discord.gg/qhUXn72rGB) |
+| Upstream lineage | [pmmp/PocketMine-MP](https://github.com/pmmp/PocketMine-MP) |
 
-Autor de la distribución: DevPapo  
-Soporte: admin@scon.host  
-Discord: https://discord.gg/qhUXn72rGB
+## Credits and legal notice
+
+The QXRND downstream distribution, branding, release engineering, and compatibility work are maintained and published by **DevPapo**. PocketMine-MP is the upstream project from which this distribution is derived. Minecraft, Minecraft Bedrock, and related marks belong to their respective owners. This project is neither affiliated with nor endorsed by Mojang or Microsoft.
