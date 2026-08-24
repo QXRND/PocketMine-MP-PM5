@@ -159,12 +159,8 @@ function preparePharCache(string $tmpPath, string $pharPath) : string{
 	return convertPharToTar($tmpName, $pharPath);
 }
 
-$tmpDir = preparePharCacheDirectory();
-cleanupPharCache($tmpDir);
-echo "Preparing PocketMine-MP.phar decompressed cache...\n";
-$start = hrtime(true);
-$cacheName = preparePharCache($tmpDir, __FILE__);
-echo "Cache ready at $cacheName in " . number_format((hrtime(true) - $start) / 1e9, 2) . "s\n";
-
-define('pocketmine\ORIGINAL_PHAR_PATH', __FILE__);
-require 'phar://' . str_replace(DIRECTORY_SEPARATOR, '/', $cacheName) . '/src/PocketMine.php';
+// Load directly from the compressed archive. Converting the PHAR to a TAR cache
+// duplicates the archive on disk and fails on low-quota Pterodactyl servers.
+define('pocketmine\\ORIGINAL_PHAR_PATH', __FILE__);
+echo "Loading PocketMine-MP.phar directly (disk cache disabled)...\n";
+require 'phar://' . str_replace(DIRECTORY_SEPARATOR, '/', __FILE__) . '/src/PocketMine.php';
