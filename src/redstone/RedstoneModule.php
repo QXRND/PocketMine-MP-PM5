@@ -1,40 +1,25 @@
 <?php
-
-/*
- * Copyright (c) 2024 - present pocketmine
- *        _      _           _                ___   ___ ____
- *       (_)    | |         | |              / _ \ / _ \___ \
- *  _ __  _  ___| |__   ___ | | __ _ ___ ___| | | | | | |__) |
- * | '_ \| |/ __| '_ \ / _ \| |/ _` / __/ __| | | | | | |__ <
- * | | | | | (__| | | | (_) | | (_| \__ \__ \ |_| | |_| |__) |
- * |_| |_|_|\___|_| |_|\___/|_|\__,_|___/___/\___/ \___/____/
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * @author  pocketmine
- * @link    https://github.com/pocketmine/
- *
- *
- */
-
 declare(strict_types=1);
 
 namespace pocketmine\redstone;
 
-use pocketmine\plugin\PluginBase;
-use pocketmine\utils\SingletonTrait;
+use pocketmine\block\Block;
+use pocketmine\redstone\block\power\BlockRedstonePowerHelper;
+use pocketmine\redstone\block\transmission\BlockRedstoneTransmissionHelper;
+use pocketmine\redstone\block\utils\BlockRedstoneUtils;
 
-final class RedstoneModule extends PluginBase{
-	use SingletonTrait;
+/**
+ * Internal redstone coordinator for QXRND PocketMine-MP.
+ * This is a core module, not an externally loaded plugin.
+ */
+final class RedstoneModule{
+	private function __construct(){}
 
-	protected function onLoad() : void{
-		self::setInstance($this);
-	}
-
-	protected function onEnable() : void{
-		$this->getServer()->getPluginManager()->registerEvents(new EventListener($this), $this);
+	public static function processBlockUpdate(Block $block) : void{
+		if(BlockRedstoneUtils::isPowerComponent($block)){
+			BlockRedstonePowerHelper::update($block);
+		}elseif(BlockRedstoneUtils::isTransmissionComponent($block)){
+			BlockRedstoneTransmissionHelper::update($block);
+		}
 	}
 }

@@ -52,6 +52,7 @@ use pocketmine\entity\object\ItemEntity;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\block\BlockUpdateEvent;
+use pocketmine\redstone\RedstoneModule;
 use pocketmine\event\entity\ItemEntityDropEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\world\ChunkLoadEvent;
@@ -1060,6 +1061,7 @@ class World implements ChunkManager{
 			}
 
 			$block = $this->getBlockAt($x, $y, $z);
+			RedstoneModule::processBlockUpdate($block);
 
 			if(BlockUpdateEvent::hasHandlers()){
 				$ev = new BlockUpdateEvent($block);

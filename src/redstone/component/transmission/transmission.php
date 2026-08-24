@@ -25,7 +25,6 @@ declare(strict_types=1);
 namespace pocketmine\redstone\component\transmission;
 
 use pocketmine\redstone\component\RedstoneComponent;
-use pocketmine\redstone\RedstoneModule;
 use pocketmine\block\Block;
 use pocketmine\block\RedstoneComparator;
 use pocketmine\block\RedstoneRepeater;
@@ -44,8 +43,7 @@ class TransmissionComponent implements RedstoneComponent{
 
 	public function handleComponents(int $action) : void{
 		$block = $this->block;
-		$scheduler = RedstoneModule::getInstance()->getScheduler();
-		$connectedRedstone = [];
+		$scheduler = $connectedRedstone = [];
 		switch($action){
 			case self::ACTION_BREAK:
 				break;
