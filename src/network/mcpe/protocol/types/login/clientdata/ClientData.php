@@ -124,6 +124,9 @@ final class ClientData{
 	/** >= ProtocolInfo::PROTOCOL_1_21_40 */
 	public int $PlatformType;
 
+	/** >= Bedrock 1.26.40; optional client metadata. */
+	public string $ProfileHash = "";
+
 	public string $PlatformUserId = ""; //xbox-only, apparently
 
 	/** < ProtocolInfo::PROTOCOL_1_21_111 */
