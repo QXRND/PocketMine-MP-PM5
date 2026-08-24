@@ -22,7 +22,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\redstoneguia\component;
+namespace pocketmine\redstone\component;
 
 use pocketmine\block\Block;
 

@@ -22,19 +22,23 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\redstoneguia;
+namespace pocketmine\redstone\block;
 
-use pocketmine\plugin\PluginBase;
-use pocketmine\utils\SingletonTrait;
+use pocketmine\block\Block;
+use pocketmine\utils\CloningRegistryTrait;
 
-final class RedstoneGuia extends PluginBase{
-	use SingletonTrait;
+final class ExtraVanillaBlocks{
+	use CloningRegistryTrait;
 
-	protected function onLoad() : void{
-		self::setInstance($this);
+	private function __construct(){
+		//NOOP
 	}
 
-	protected function onEnable() : void{
-		$this->getServer()->getPluginManager()->registerEvents(new EventListener($this), $this);
+	protected static function register(string $name, Block $block) : void{
+		self::_registryRegister($name, $block);
+	}
+
+	protected static function setup() : void{
+
 	}
 }

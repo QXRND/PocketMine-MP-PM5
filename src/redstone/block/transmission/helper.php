@@ -22,11 +22,11 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\redstoneguia\block\transmission;
+namespace pocketmine\redstone\block\transmission;
 
-use pocketmine\redstoneguia\block\IBlockRedstoneHelper;
-use pocketmine\redstoneguia\block\power\BlockRedstonePowerHelper;
-use pocketmine\redstoneguia\block\utils\BlockRedstoneUtils;
+use pocketmine\redstone\block\IBlockRedstoneHelper;
+use pocketmine\redstone\block\power\BlockRedstonePowerHelper;
+use pocketmine\redstone\block\utils\BlockRedstoneUtils;
 use pocketmine\block\Block;
 use pocketmine\block\RedstoneWire;
 use pocketmine\math\Facing;

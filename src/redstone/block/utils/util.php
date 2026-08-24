@@ -22,9 +22,9 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\redstoneguia\block\utils;
+namespace pocketmine\redstone\block\utils;
 
-use pocketmine\redstoneguia\block\power\BlockRedstonePowerHelper;
+use pocketmine\redstone\block\power\BlockRedstonePowerHelper;
 use pocketmine\block\Block;
 use pocketmine\block\Button;
 use pocketmine\block\Lever;

@@ -22,13 +22,13 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\redstoneguia\block\power;
+namespace pocketmine\redstone\block\power;
 
-use pocketmine\redstoneguia\block\IBlockRedstoneHelper;
-use pocketmine\redstoneguia\block\transmission\BlockRedstoneTransmissionHelper;
-use pocketmine\redstoneguia\block\utils\BlockRedstoneUtils;
-use pocketmine\redstoneguia\component\power\PowerComponent;
-use pocketmine\redstoneguia\event\BlockRedstonePowerEvent;
+use pocketmine\redstone\block\IBlockRedstoneHelper;
+use pocketmine\redstone\block\transmission\BlockRedstoneTransmissionHelper;
+use pocketmine\redstone\block\utils\BlockRedstoneUtils;
+use pocketmine\redstone\component\power\PowerComponent;
+use pocketmine\redstone\event\BlockRedstonePowerEvent;
 use pocketmine\block\Block;
 use pocketmine\block\Button;
 use pocketmine\block\Lever;

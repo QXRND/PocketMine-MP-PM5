@@ -22,25 +22,11 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\redstoneguia\event;
+namespace pocketmine\redstone\block;
 
 use pocketmine\block\Block;
-use pocketmine\event\block\BlockEvent;
 
-class BlockRedstonePowerEvent extends BlockEvent{
+interface IBlockRedstoneHelper{
 
-	public function __construct(
-		Block $block,
-		private bool $powered
-	){
-		parent::__construct($block);
-	}
-
-	public function getPowered() : bool{
-		return $this->powered;
-	}
-
-	public function setPowered(bool $value) : void{
-		$this->powered = $value;
-	}
+	public static function update(Block $block) : void;
 }

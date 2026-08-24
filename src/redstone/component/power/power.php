@@ -22,12 +22,12 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\redstoneguia\component\power;
+namespace pocketmine\redstone\component\power;
 
-use pocketmine\redstoneguia\block\power\BlockRedstonePowerHelper;
-use pocketmine\redstoneguia\block\transmission\BlockRedstoneTransmissionHelper;
-use pocketmine\redstoneguia\component\RedstoneComponent;
-use pocketmine\redstoneguia\RedstoneGuia;
+use pocketmine\redstone\block\power\BlockRedstonePowerHelper;
+use pocketmine\redstone\block\transmission\BlockRedstoneTransmissionHelper;
+use pocketmine\redstone\component\RedstoneComponent;
+use pocketmine\redstone\RedstoneModule;
 use pocketmine\block\Block;
 use pocketmine\block\Button;
 use pocketmine\block\Lever;
@@ -53,7 +53,7 @@ class PowerComponent implements RedstoneComponent{
 	}
 
 	public function scheduleUpdate(int $delayTick = 1) : void{
-		$scheduler = RedstoneGuia::getInstance()->getScheduler();
+		$scheduler = RedstoneModule::getInstance()->getScheduler();
 		$block = $this->getBlock();
 		if($block instanceof Button){
 			$scheduler->scheduleDelayedTask(new ClosureTask(function() use($block) : void{
@@ -72,7 +72,7 @@ class PowerComponent implements RedstoneComponent{
 
 	public function handleComponents(int $action) : void{
 		$block = $this->block;
-		$scheduler = RedstoneGuia::getInstance()->getScheduler();
+		$scheduler = RedstoneModule::getInstance()->getScheduler();
 		$connectedRedstone = [];
 		switch($action){
 			case self::ACTION_BREAK:

@@ -22,14 +22,14 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\redstoneguia;
+namespace pocketmine\redstone;
 
-use pocketmine\redstoneguia\block\power\BlockRedstonePowerHelper;
-use pocketmine\redstoneguia\block\transmission\BlockRedstoneTransmissionHelper;
-use pocketmine\redstoneguia\block\utils\BlockRedstoneUtils;
-use pocketmine\redstoneguia\component\power\PowerComponent;
-use pocketmine\redstoneguia\component\RedstoneComponent;
-use pocketmine\redstoneguia\component\transmission\TransmissionComponent;
+use pocketmine\redstone\block\power\BlockRedstonePowerHelper;
+use pocketmine\redstone\block\transmission\BlockRedstoneTransmissionHelper;
+use pocketmine\redstone\block\utils\BlockRedstoneUtils;
+use pocketmine\redstone\component\power\PowerComponent;
+use pocketmine\redstone\component\RedstoneComponent;
+use pocketmine\redstone\component\transmission\TransmissionComponent;
 use pocketmine\block\Block;
 use pocketmine\block\RedstoneWire;
 use pocketmine\event\block\BlockBreakEvent;
@@ -45,7 +45,7 @@ use function max;
 class EventListener implements Listener{
 
 	public function __construct(
-		private RedstoneGuia $plugin
+		private RedstoneModule $plugin
 	){}
 
 	public function onBlockBreak(BlockBreakEvent $event) : void{
