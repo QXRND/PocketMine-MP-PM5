@@ -259,7 +259,10 @@ class LoginPacketHandler extends PacketHandler{
 		//skinId prefix 'c18e65aa-7b21-4637-9b63-8ad63622ef01.') triggers the exact same
 		//crash for 2168.
 		//
-		//IMPORTANT: this is 2168-ONLY. 2026-08-10/13 investigation initially (wrongly)
+		//IMPORTANT: this is 2168-ONLY. Do not apply this restriction to later hotfix
+		//protocols without confirming that they have the same client-side limitation.
+		//2026-08-10/13 investigation initially (wrongly)
+
 		//extended this same check down to protocol 975/1001 (1.26.20-1.26.33) after
 		//observing what looked like an identical crash there - but that crash turned out to
 		//be an unrelated bug (missing "variant" field + wrong VarInt signedness in
@@ -273,7 +276,7 @@ class LoginPacketHandler extends PacketHandler{
 		//live evidence.
 		if(
 			($clientData->PersonaSkin || str_starts_with($clientData->SkinId, "c18e65aa-7b21-4637-9b63-8ad63622ef01."))
-			&& $this->session->getProtocolId() >= ProtocolInfo::PROTOCOL_1_26_40
+				&& $this->session->getProtocolId() === ProtocolInfo::PROTOCOL_1_26_40
 		){
 			$this->session->disconnectWithError(
 				reason: "Default/random skin not supported on this protocol version",
