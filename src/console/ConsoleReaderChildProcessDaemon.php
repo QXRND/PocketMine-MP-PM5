@@ -84,8 +84,9 @@ final class ConsoleReaderChildProcessDaemon{
 				sprintf('require base64_decode("%s", true);', base64_encode(Path::join(__DIR__, 'ConsoleReaderChildProcess.php'))),
 				(string) $this->commandTokenSeed
 			],
-			[
-				1 => ['socket'],
+				[
+					0 => ['file', 'php://stdin', 'r'],
+					1 => ['socket'],
 				2 => Utils::assumeNotFalse(fopen("php://stderr", "w")),
 			],
 			$pipes
