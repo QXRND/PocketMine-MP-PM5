@@ -32,10 +32,17 @@ use function strlen;
 use const JSON_THROW_ON_ERROR;
 
 final class Skin{
+	/**
+	 * Standard Bedrock skin sizes plus commonly used high-resolution square skins.
+	 * The 512x512 upper bound prevents unbounded skin payloads while supporting
+	 * modern skin editors that export higher-resolution textures.
+	 */
 	public const ACCEPTED_SKIN_SIZES = [
 		64 * 32 * 4,
 		64 * 64 * 4,
-		128 * 128 * 4
+		128 * 128 * 4,
+		256 * 256 * 4,
+		512 * 512 * 4
 	];
 
 	private string $skinId;

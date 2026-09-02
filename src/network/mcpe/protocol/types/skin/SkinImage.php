@@ -38,6 +38,10 @@ class SkinImage{
 				return new self(64, 64, $data);
 			case 128 * 128 * 4:
 				return new self(128, 128, $data);
+			case 256 * 256 * 4:
+				return new self(256, 256, $data);
+			case 512 * 512 * 4:
+				return new self(512, 512, $data);
 		}
 
 		throw new \InvalidArgumentException("Unknown size");
