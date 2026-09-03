@@ -44,10 +44,11 @@ use pocketmine\world\World;
 class BlockRedstonePowerHelper implements IBlockRedstoneHelper{
 
 	public static function update(Block $block) : void{
-		self::power($block);
+		$visitedBlocks = [];
+		self::power($block, $visitedBlocks);
 	}
 
-	public static function power(Block $block) : void{
+	public static function power(Block $block, array &$visitedBlocks = []) : void{
 		$activate = false;
 		$component = null;
 		$ignoreFace = null;
@@ -87,14 +88,14 @@ class BlockRedstonePowerHelper implements IBlockRedstoneHelper{
 			$rBlock = $block->getSide($face);
 			$world = $rBlock->getPosition()->getWorld();
 			if($rBlock instanceof RedstoneWire){
-				$rBlock->setOutputSignalStrength($power);
-				if($activate === false){
-					$rBlock->setOutputSignalStrength(0);
+				$wirePower = $activate ? $power : 0;
+				if($rBlock->getOutputSignalStrength() !== $wirePower){
+					$rBlock->setOutputSignalStrength($wirePower);
+					$world->setBlock($rBlock->getPosition(), $rBlock);
+					BlockRedstoneTransmissionHelper::update($rBlock);
 				}
-				$world->setBlock($rBlock->getPosition(), $rBlock);
-				BlockRedstoneTransmissionHelper::update($rBlock);
 			}else{
-				self::activate($rBlock, $activate);
+				self::activate($rBlock, $activate, $visitedBlocks);
 			}
 		}
 	}
@@ -104,17 +105,20 @@ class BlockRedstonePowerHelper implements IBlockRedstoneHelper{
 		$world = $pos->getWorld();
 
 		$hash = World::blockHash($pos->x, $pos->y, $pos->z);
-		if(isset($visitedBlocks[$hash])){
+			if(isset($visitedBlocks[$hash])){
 			return;
 		}
+		$visitedBlocks[$hash] = true;
 
 		if(BlockRedstoneUtils::isPoweredByRedstone($block)){
 			/** @var Block&\pocketmine\block\utils\PoweredByRedstoneTrait $block */
 			$ev = new BlockRedstonePowerEvent($block, $activate);
 			$ev->call();
-
-			$block->setPowered($ev->getPowered());
-			$world->setBlock($pos, $block);
+			$powered = $ev->getPowered();
+			if($block->isPowered() !== $powered){
+				$block->setPowered($powered);
+				$world->setBlock($pos, $block);
+			}
 		}
 	}
 }
