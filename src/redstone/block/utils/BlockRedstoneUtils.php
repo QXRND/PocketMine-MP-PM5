@@ -36,16 +36,14 @@ use pocketmine\block\RedstoneWire;
 use pocketmine\block\Observer;
 use pocketmine\block\SimplePressurePlate;
 use pocketmine\block\WeightedPressurePlate;
+use pocketmine\block\utils\PoweredByRedstone;
 use pocketmine\math\Facing;
 use pocketmine\world\World;
-use ReflectionClass;
-use function in_array;
 
 final class BlockRedstoneUtils{
 
 	public static function isPoweredByRedstone(Block $block) : bool{
-		$reflectionClass = new ReflectionClass($block);
-		return in_array("pocketmine\block\utils\PoweredByRedstoneTrait", $reflectionClass->getTraitNames(), true);
+		return $block instanceof PoweredByRedstone;
 	}
 
 	public static function isPowerComponent(Block $block) : bool{
