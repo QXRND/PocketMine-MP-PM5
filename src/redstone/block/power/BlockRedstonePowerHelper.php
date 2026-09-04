@@ -37,6 +37,7 @@ use pocketmine\block\Lever;
 use pocketmine\block\Redstone;
 use pocketmine\block\RedstoneTorch;
 use pocketmine\block\RedstoneWire;
+use pocketmine\block\RedstoneRepeater;
 use pocketmine\block\Observer;
 use pocketmine\block\Dispenser;
 use pocketmine\block\Dropper;
@@ -58,8 +59,8 @@ class BlockRedstonePowerHelper implements IBlockRedstoneHelper{
 		$component = null;
 		$ignoreFace = null;
 		$power = 0;
-		if($block instanceof Lever){
-			$activate = !$block->isActivated();
+			if($block instanceof Lever){
+				$activate = $block->isActivated();
 			$ignoreFace = $block->getFacing()->getFacing();
 			if($activate === true){
 				$power = 15;
@@ -86,6 +87,9 @@ class BlockRedstonePowerHelper implements IBlockRedstoneHelper{
 				if($activate){
 					$power = 15;
 				}
+			}elseif($block instanceof RedstoneRepeater){
+				$activate = $block->isPowered();
+				$power = 15;
 			}elseif($block instanceof SimplePressurePlate || $block instanceof WeightedPressurePlate){
 			/** @var Block&\pocketmine\block\utils\AnalogRedstoneSignalEmitterTrait $block */
 			$power = $block->getOutputSignalStrength();
@@ -93,6 +97,9 @@ class BlockRedstonePowerHelper implements IBlockRedstoneHelper{
 		}
 		foreach(Facing::ALL as $face){
 			if($block instanceof Observer && $face !== Facing::opposite($block->getFacing())){
+				continue;
+			}
+			if($block instanceof RedstoneRepeater && $face !== $block->getFacing()){
 				continue;
 			}
 			if($face === $ignoreFace){

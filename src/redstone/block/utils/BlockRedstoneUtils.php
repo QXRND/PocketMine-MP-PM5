@@ -49,7 +49,7 @@ final class BlockRedstoneUtils{
 	}
 
 	public static function isPowerComponent(Block $block) : bool{
-		if($block instanceof Button || $block instanceof Lever || $block instanceof Redstone || $block instanceof RedstoneTorch || $block instanceof SimplePressurePlate || $block instanceof Observer){
+		if($block instanceof Button || $block instanceof Lever || $block instanceof Redstone || $block instanceof RedstoneTorch || $block instanceof SimplePressurePlate || $block instanceof WeightedPressurePlate || $block instanceof Observer){
 			//TODO: support more blocks ?
 			return true;
 		}
@@ -65,45 +65,39 @@ final class BlockRedstoneUtils{
 	}
 
 	public static function hasPowerSourceNearby(Block $block, array &$visitedBlocks = []) : bool{
+		return self::getInputSignalStrength($block, $visitedBlocks) > 0;
+	}
+
+	public static function getInputSignalStrength(Block $block, array &$visitedBlocks = []) : int{
 		$pos = $block->getPosition();
 		$world = $pos->getWorld();
-
 		$hash = World::blockHash($pos->x, $pos->y, $pos->z);
-		$neighbors = [];
 		if(isset($visitedBlocks[$hash])){
-			return false;
+			return 0;
 		}
-
 		$visitedBlocks[$hash] = true;
+		$max = 0;
 
 		foreach(Facing::ALL as $face){
-			$_block = $block->getSide($face);
-			if(self::isPowerComponent($_block)){
-				BlockRedstonePowerHelper::power($_block);
-				return true;
+			$neighbor = $block->getSide($face);
+			$signal = 0;
+			if($neighbor instanceof RedstoneWire){
+				$signal = $neighbor->getOutputSignalStrength();
+			}elseif($neighbor instanceof Lever){
+				$signal = $neighbor->isActivated() ? 15 : 0;
+			}elseif($neighbor instanceof Button){
+				$signal = $neighbor->isPressed() ? 15 : 0;
+			}elseif($neighbor instanceof RedstoneTorch){
+				$signal = $neighbor->isLit() ? 15 : 0;
+			}elseif($neighbor instanceof Redstone){
+				$signal = 15;
+			}elseif($neighbor instanceof Observer){
+				$signal = $neighbor->isPowered() ? 15 : 0;
+			}elseif($neighbor instanceof SimplePressurePlate || $neighbor instanceof WeightedPressurePlate){
+				$signal = $neighbor->getOutputSignalStrength();
 			}
-
-			foreach([1, -1] as $yOffset){
-				foreach([Facing::NORTH, Facing::SOUTH, Facing::EAST, Facing::WEST] as $horizontal){
-					$neighborPos = $pos->getSide($horizontal)->add(0, $yOffset, 0);
-					$diagonalBlock = $world->getBlock($neighborPos);
-					if($diagonalBlock instanceof RedstoneWire){
-						$neighbors[] = $diagonalBlock;
-					}elseif(self::isPowerComponent($diagonalBlock)){
-						BlockRedstonePowerHelper::power($diagonalBlock);
-						return true;
-					}
-				}
-			}
-
-			foreach($neighbors as $neighbor){
-				if(!isset($visitedBlocks[World::blockHash($neighbor->getPosition()->x, $neighbor->getPosition()->y, $neighbor->getPosition()->z)])){
-					if(static::hasPowerSourceNearby($neighbor, $visitedBlocks)){
-						return true;
-					}
-				}
-			}
+			$max = max($max, $signal);
 		}
-		return false;
+		return $max;
 	}
 }

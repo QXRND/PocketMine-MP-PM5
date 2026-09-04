@@ -20,7 +20,7 @@ use pocketmine\world\World;
 final class PowerComponent implements RedstoneComponent{
 	public function __construct(private Block $block, private bool $active = true){
 		if($block instanceof Lever){
-			$this->active = !$block->isActivated();
+			$this->active = $block->isActivated();
 		}elseif($block instanceof RedstoneTorch){
 			$this->active = $block->isLit();
 		}

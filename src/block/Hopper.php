@@ -34,6 +34,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\redstone\hopper\HopperTransfer;
 
 class Hopper extends Transparent implements PoweredByRedstone{
 	use PoweredByRedstoneTrait;
@@ -92,9 +93,15 @@ class Hopper extends Transparent implements PoweredByRedstone{
 		return false;
 	}
 
-	public function onScheduledUpdate() : void{
-		//TODO
+	public function onNearbyBlockChange() : void{
+		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1);
 	}
 
-	//TODO: redstone logic, sucking logic
+	public function onScheduledUpdate() : void{
+		if(!$this->powered){
+			HopperTransfer::tick($this);
+		}
+		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 8);
+	}
+
 }
