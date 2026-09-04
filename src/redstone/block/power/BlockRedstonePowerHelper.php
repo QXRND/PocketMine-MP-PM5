@@ -29,12 +29,17 @@ use pocketmine\redstone\block\transmission\BlockRedstoneTransmissionHelper;
 use pocketmine\redstone\block\utils\BlockRedstoneUtils;
 use pocketmine\redstone\component\power\PowerComponent;
 use pocketmine\redstone\event\BlockRedstonePowerEvent;
+use pocketmine\redstone\piston\PistonResolver;
+use pocketmine\block\Piston;
 use pocketmine\block\Block;
 use pocketmine\block\Button;
 use pocketmine\block\Lever;
 use pocketmine\block\Redstone;
 use pocketmine\block\RedstoneTorch;
 use pocketmine\block\RedstoneWire;
+use pocketmine\block\Observer;
+use pocketmine\block\Dispenser;
+use pocketmine\block\Dropper;
 use pocketmine\block\SimplePressurePlate;
 use pocketmine\block\WeightedPressurePlate;
 use pocketmine\block\WoodenButton;
@@ -71,17 +76,25 @@ class BlockRedstonePowerHelper implements IBlockRedstoneHelper{
 			}
 			$component = new PowerComponent($block);
 			$component->scheduleUpdate($redstoneTicks);
-		}elseif($block instanceof RedstoneTorch){
-			$activate = $block->isLit();
-			if($activate === true){
-				$power = 15;
-			}
-		}elseif($block instanceof SimplePressurePlate || $block instanceof WeightedPressurePlate){
+			}elseif($block instanceof RedstoneTorch){
+				$activate = $block->isLit();
+				if($activate === true){
+					$power = 15;
+				}
+			}elseif($block instanceof Observer){
+				$activate = $block->isPowered();
+				if($activate){
+					$power = 15;
+				}
+			}elseif($block instanceof SimplePressurePlate || $block instanceof WeightedPressurePlate){
 			/** @var Block&\pocketmine\block\utils\AnalogRedstoneSignalEmitterTrait $block */
 			$power = $block->getOutputSignalStrength();
 			$activate = $power > 0;
 		}
 		foreach(Facing::ALL as $face){
+			if($block instanceof Observer && $face !== Facing::opposite($block->getFacing())){
+				continue;
+			}
 			if($face === $ignoreFace){
 				continue;
 			}
@@ -115,10 +128,17 @@ class BlockRedstonePowerHelper implements IBlockRedstoneHelper{
 			$ev = new BlockRedstonePowerEvent($block, $activate);
 			$ev->call();
 			$powered = $ev->getPowered();
-			if($block->isPowered() !== $powered){
-				$block->setPowered($powered);
-				$world->setBlock($pos, $block);
-			}
+				if($block->isPowered() !== $powered){
+					if($block instanceof Piston){
+						PistonResolver::onPowerChanged($block, $powered);
+					}else{
+						$block->setPowered($powered);
+						$world->setBlock($pos, $block);
+						if($powered && ($block instanceof Dispenser || $block instanceof Dropper)){
+							$world->scheduleDelayedBlockUpdate($pos, 1);
+						}
+					}
+				}
 		}
 	}
 }

@@ -33,6 +33,7 @@ use pocketmine\block\RedstoneComparator;
 use pocketmine\block\RedstoneRepeater;
 use pocketmine\block\RedstoneTorch;
 use pocketmine\block\RedstoneWire;
+use pocketmine\block\Observer;
 use pocketmine\block\SimplePressurePlate;
 use pocketmine\block\WeightedPressurePlate;
 use pocketmine\math\Facing;
@@ -48,7 +49,7 @@ final class BlockRedstoneUtils{
 	}
 
 	public static function isPowerComponent(Block $block) : bool{
-		if($block instanceof Button || $block instanceof Lever || $block instanceof Redstone || $block instanceof RedstoneTorch || $block instanceof SimplePressurePlate){
+		if($block instanceof Button || $block instanceof Lever || $block instanceof Redstone || $block instanceof RedstoneTorch || $block instanceof SimplePressurePlate || $block instanceof Observer){
 			//TODO: support more blocks ?
 			return true;
 		}

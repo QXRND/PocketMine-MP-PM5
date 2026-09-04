@@ -305,6 +305,11 @@ final class VanillaItemsInputs extends RegistrySource{
 		self::register("record_ward", fn(IID $id) => new Record($id, RecordType::DISK_WARD, "Record Ward"));
 		self::register("recovery_compass", fn(IID $id) => new Item($id, "Recovery Compass"));
 		self::register("redstone_dust", fn(IID $id) => new Redstone($id, "Redstone"));
+		self::registerDelayed("dispenser", fn(string $name) : ItemBlock => new ItemBlock(Blocks::DISPENSER()));
+		self::registerDelayed("dropper", fn(string $name) : ItemBlock => new ItemBlock(Blocks::DROPPER()));
+		self::registerDelayed("observer", fn(string $name) : ItemBlock => new ItemBlock(Blocks::OBSERVER()));
+		self::registerDelayed("piston", fn(string $name) : ItemBlock => new ItemBlock(Blocks::PISTON()));
+		self::registerDelayed("sticky_piston", fn(string $name) : ItemBlock => new ItemBlock(Blocks::STICKY_PISTON()));
 		self::register("resin_brick", fn(IID $id) => new Item($id, "Resin Brick"));
 		self::register("rotten_flesh", fn(IID $id) => new RottenFlesh($id, "Rotten Flesh"));
 		self::register("scute", fn(IID $id) => new Item($id, "Scute"));

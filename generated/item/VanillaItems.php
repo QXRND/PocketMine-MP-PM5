@@ -156,8 +156,10 @@ final class VanillaItems{
 	private static Shovel $_mDIAMOND_SHOVEL;
 	private static Sword $_mDIAMOND_SWORD;
 	private static Item $_mDISC_FRAGMENT_5;
+	private static ItemBlock $_mDISPENSER;
 	private static Item $_mDRAGON_BREATH;
 	private static DriedKelp $_mDRIED_KELP;
+	private static ItemBlock $_mDROPPER;
 	private static Item $_mDUNE_ARMOR_TRIM_SMITHING_TEMPLATE;
 	private static Dye $_mDYE;
 	private static Item $_mECHO_SHARD;
@@ -256,12 +258,14 @@ final class VanillaItems{
 	private static Boat $_mOAK_BOAT;
 	private static HangingSign $_mOAK_HANGING_SIGN;
 	private static ItemBlockWallOrFloor $_mOAK_SIGN;
+	private static ItemBlock $_mOBSERVER;
 	private static ItemBlockWallOrFloor $_mOMINOUS_BANNER;
 	private static PaintingItem $_mPAINTING;
 	private static HangingSign $_mPALE_OAK_HANGING_SIGN;
 	private static ItemBlockWallOrFloor $_mPALE_OAK_SIGN;
 	private static Item $_mPAPER;
 	private static Item $_mPHANTOM_MEMBRANE;
+	private static ItemBlock $_mPISTON;
 	private static PitcherPod $_mPITCHER_POD;
 	private static PoisonousPotato $_mPOISONOUS_POTATO;
 	private static Item $_mPOPPED_CHORUS_FRUIT;
@@ -330,6 +334,7 @@ final class VanillaItems{
 	private static SpawnEgg $_mSQUID_SPAWN_EGG;
 	private static Steak $_mSTEAK;
 	private static Stick $_mSTICK;
+	private static ItemBlock $_mSTICKY_PISTON;
 	private static Axe $_mSTONE_AXE;
 	private static Hoe $_mSTONE_HOE;
 	private static Pickaxe $_mSTONE_PICKAXE;
@@ -514,8 +519,10 @@ final class VanillaItems{
 			"diamond_shovel" => fn(Shovel $v) => self::$_mDIAMOND_SHOVEL = $v,
 			"diamond_sword" => fn(Sword $v) => self::$_mDIAMOND_SWORD = $v,
 			"disc_fragment_5" => fn(Item $v) => self::$_mDISC_FRAGMENT_5 = $v,
+			"dispenser" => fn(ItemBlock $v) => self::$_mDISPENSER = $v,
 			"dragon_breath" => fn(Item $v) => self::$_mDRAGON_BREATH = $v,
 			"dried_kelp" => fn(DriedKelp $v) => self::$_mDRIED_KELP = $v,
+			"dropper" => fn(ItemBlock $v) => self::$_mDROPPER = $v,
 			"dune_armor_trim_smithing_template" => fn(Item $v) => self::$_mDUNE_ARMOR_TRIM_SMITHING_TEMPLATE = $v,
 			"dye" => fn(Dye $v) => self::$_mDYE = $v,
 			"echo_shard" => fn(Item $v) => self::$_mECHO_SHARD = $v,
@@ -614,12 +621,14 @@ final class VanillaItems{
 			"oak_boat" => fn(Boat $v) => self::$_mOAK_BOAT = $v,
 			"oak_hanging_sign" => fn(HangingSign $v) => self::$_mOAK_HANGING_SIGN = $v,
 			"oak_sign" => fn(ItemBlockWallOrFloor $v) => self::$_mOAK_SIGN = $v,
+			"observer" => fn(ItemBlock $v) => self::$_mOBSERVER = $v,
 			"ominous_banner" => fn(ItemBlockWallOrFloor $v) => self::$_mOMINOUS_BANNER = $v,
 			"painting" => fn(PaintingItem $v) => self::$_mPAINTING = $v,
 			"pale_oak_hanging_sign" => fn(HangingSign $v) => self::$_mPALE_OAK_HANGING_SIGN = $v,
 			"pale_oak_sign" => fn(ItemBlockWallOrFloor $v) => self::$_mPALE_OAK_SIGN = $v,
 			"paper" => fn(Item $v) => self::$_mPAPER = $v,
 			"phantom_membrane" => fn(Item $v) => self::$_mPHANTOM_MEMBRANE = $v,
+			"piston" => fn(ItemBlock $v) => self::$_mPISTON = $v,
 			"pitcher_pod" => fn(PitcherPod $v) => self::$_mPITCHER_POD = $v,
 			"poisonous_potato" => fn(PoisonousPotato $v) => self::$_mPOISONOUS_POTATO = $v,
 			"popped_chorus_fruit" => fn(Item $v) => self::$_mPOPPED_CHORUS_FRUIT = $v,
@@ -688,6 +697,7 @@ final class VanillaItems{
 			"squid_spawn_egg" => fn(SpawnEgg $v) => self::$_mSQUID_SPAWN_EGG = $v,
 			"steak" => fn(Steak $v) => self::$_mSTEAK = $v,
 			"stick" => fn(Stick $v) => self::$_mSTICK = $v,
+			"sticky_piston" => fn(ItemBlock $v) => self::$_mSTICKY_PISTON = $v,
 			"stone_axe" => fn(Axe $v) => self::$_mSTONE_AXE = $v,
 			"stone_hoe" => fn(Hoe $v) => self::$_mSTONE_HOE = $v,
 			"stone_pickaxe" => fn(Pickaxe $v) => self::$_mSTONE_PICKAXE = $v,
@@ -1348,6 +1358,11 @@ final class VanillaItems{
 		return clone self::$_mDISC_FRAGMENT_5;
 	}
 
+	public static function DISPENSER() : ItemBlock{
+		if(!isset(self::$_mDISPENSER)){ self::init(); }
+		return clone self::$_mDISPENSER;
+	}
+
 	public static function DRAGON_BREATH() : Item{
 		if(!isset(self::$_mDRAGON_BREATH)){ self::init(); }
 		return clone self::$_mDRAGON_BREATH;
@@ -1356,6 +1371,11 @@ final class VanillaItems{
 	public static function DRIED_KELP() : DriedKelp{
 		if(!isset(self::$_mDRIED_KELP)){ self::init(); }
 		return clone self::$_mDRIED_KELP;
+	}
+
+	public static function DROPPER() : ItemBlock{
+		if(!isset(self::$_mDROPPER)){ self::init(); }
+		return clone self::$_mDROPPER;
 	}
 
 	public static function DUNE_ARMOR_TRIM_SMITHING_TEMPLATE() : Item{
@@ -1848,6 +1868,11 @@ final class VanillaItems{
 		return clone self::$_mOAK_SIGN;
 	}
 
+	public static function OBSERVER() : ItemBlock{
+		if(!isset(self::$_mOBSERVER)){ self::init(); }
+		return clone self::$_mOBSERVER;
+	}
+
 	public static function OMINOUS_BANNER() : ItemBlockWallOrFloor{
 		if(!isset(self::$_mOMINOUS_BANNER)){ self::init(); }
 		return clone self::$_mOMINOUS_BANNER;
@@ -1876,6 +1901,11 @@ final class VanillaItems{
 	public static function PHANTOM_MEMBRANE() : Item{
 		if(!isset(self::$_mPHANTOM_MEMBRANE)){ self::init(); }
 		return clone self::$_mPHANTOM_MEMBRANE;
+	}
+
+	public static function PISTON() : ItemBlock{
+		if(!isset(self::$_mPISTON)){ self::init(); }
+		return clone self::$_mPISTON;
 	}
 
 	public static function PITCHER_POD() : PitcherPod{
@@ -2216,6 +2246,11 @@ final class VanillaItems{
 	public static function STICK() : Stick{
 		if(!isset(self::$_mSTICK)){ self::init(); }
 		return clone self::$_mSTICK;
+	}
+
+	public static function STICKY_PISTON() : ItemBlock{
+		if(!isset(self::$_mSTICKY_PISTON)){ self::init(); }
+		return clone self::$_mSTICKY_PISTON;
 	}
 
 	public static function STONE_AXE() : Axe{

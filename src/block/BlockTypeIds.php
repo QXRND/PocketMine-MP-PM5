@@ -855,7 +855,12 @@ final class BlockTypeIds{
 	public const AZALEA = 10825;
 	public const FLOWERING_AZALEA = 10826;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10827;
+	public const DISPENSER = 10827;
+	public const DROPPER = 10828;
+	public const OBSERVER = 10829;
+	public const PISTON = 10830;
+	public const STICKY_PISTON = 10831;
+	public const FIRST_UNUSED_BLOCK_ID = 10832;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 

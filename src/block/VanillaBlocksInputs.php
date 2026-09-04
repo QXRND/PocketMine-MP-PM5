@@ -41,6 +41,8 @@ use pocketmine\block\tile\Chest as TileChest;
 use pocketmine\block\tile\ChiseledBookshelf as TileChiseledBookshelf;
 use pocketmine\block\tile\Comparator as TileComparator;
 use pocketmine\block\tile\DaylightSensor as TileDaylightSensor;
+use pocketmine\block\tile\Dispenser as TileDispenser;
+use pocketmine\block\tile\Dropper as TileDropper;
 use pocketmine\block\tile\EnchantTable as TileEnchantingTable;
 use pocketmine\block\tile\EnderChest as TileEnderChest;
 use pocketmine\block\tile\FlowerPot as TileFlowerPot;
@@ -362,6 +364,11 @@ final class VanillaBlocksInputs extends RegistrySource{
 		self::register("redstone_repeater", fn(BID $id) => new RedstoneRepeater($id, "Redstone Repeater", new Info(BreakInfo::instant())));
 		self::register("redstone_torch", fn(BID $id) => new RedstoneTorch($id, "Redstone Torch", new Info(BreakInfo::instant())));
 		self::register("redstone_wire", fn(BID $id) => new RedstoneWire($id, "Redstone", new Info(BreakInfo::instant())));
+		self::register("dispenser", fn(BID $id) => new Dispenser($id, "Dispenser", new Info(BreakInfo::pickaxe(3.5))), TileDispenser::class);
+		self::register("dropper", fn(BID $id) => new Dropper($id, "Dropper", new Info(BreakInfo::pickaxe(3.5))), TileDropper::class);
+		self::register("observer", fn(BID $id) => new Observer($id, "Observer", new Info(BreakInfo::pickaxe(3.0))));
+		self::register("piston", fn(BID $id) => new Piston($id, "Piston", new Info(BreakInfo::pickaxe(1.5))));
+		self::register("sticky_piston", fn(BID $id) => new StickyPiston($id, "Sticky Piston", new Info(BreakInfo::pickaxe(1.5))));
 		self::register("reserved6", fn(BID $id) => new Reserved6($id, "reserved6", new Info(BreakInfo::instant())));
 
 		$sandTypeInfo = new Info(BreakInfo::shovel(0.5), [Tags::SAND]);
