@@ -111,7 +111,7 @@ class BlockRedstonePowerHelper implements IBlockRedstoneHelper{
 				$wirePower = $activate ? $power : 0;
 				if($rBlock->getOutputSignalStrength() !== $wirePower){
 					$rBlock->setOutputSignalStrength($wirePower);
-					$world->setBlock($rBlock->getPosition(), $rBlock);
+					$world->setBlock($rBlock->getPosition(), $rBlock, update: false);
 					BlockRedstoneTransmissionHelper::update($rBlock);
 				}
 			}else{
@@ -140,7 +140,7 @@ class BlockRedstonePowerHelper implements IBlockRedstoneHelper{
 						PistonResolver::onPowerChanged($block, $powered);
 					}else{
 						$block->setPowered($powered);
-						$world->setBlock($pos, $block);
+						$world->setBlock($pos, $block, update: false);
 						if($powered && ($block instanceof Dispenser || $block instanceof Dropper)){
 							$world->scheduleDelayedBlockUpdate($pos, 1);
 						}

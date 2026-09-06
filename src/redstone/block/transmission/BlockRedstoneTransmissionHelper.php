@@ -56,7 +56,7 @@ class BlockRedstoneTransmissionHelper implements IBlockRedstoneHelper{
 		if($block instanceof RedstoneWire){
 			if($block->getOutputSignalStrength() !== $power){
 				$block->setOutputSignalStrength($power);
-				$world->setBlock($pos, $block);
+				$world->setBlock($pos, $block, update: false);
 			}
 		}
 
