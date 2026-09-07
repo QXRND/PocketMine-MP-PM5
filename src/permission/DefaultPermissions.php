@@ -75,8 +75,10 @@ abstract class DefaultPermissions{
 
 		self::registerNoArgsDesc(Names::COMMAND_DUMPMEMORY, [$consoleRoot]);
 
+			self::registerPermission(new Permission(Names::COMMAND_AUTH, "Manage native authentication accounts"), [$everyoneRoot]);
+
 		foreach([
-			Names::BROADCAST_ADMIN,
+				Names::BROADCAST_ADMIN,
 			Names::COMMAND_BAN_IP,
 			Names::COMMAND_BAN_LIST,
 			Names::COMMAND_BAN_PLAYER,

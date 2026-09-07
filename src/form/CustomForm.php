@@ -69,6 +69,9 @@ final class CustomForm implements Form{
 
 	public function handleResponse(Player $player, $data) : void{
 		if($data === null){
+			if($this->handler !== null){
+				($this->handler)($player, null);
+			}
 			return;
 		}
 		if(!is_array($data)){

@@ -1515,10 +1515,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 
 		$this->lastUpdate = $currentTick;
 
-		if($this->justCreated){
+				if($this->justCreated){
 			$this->onFirstUpdate($currentTick);
 		}
-
+		if(!$this->server->getAuthManager()->isAuthenticated($this)){
+			$this->server->getAuthManager()->begin($this);
+			return true;
+		}
 		if(!$this->isAlive() && $this->spawned){
 			$this->onDeathUpdate($tickDiff);
 			return true;
@@ -1595,6 +1598,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	 * as a command.
 	 */
 	public function chat(string $message) : bool{
+		if(!$this->server->getAuthManager()->isAuthenticated($this)){
+			return false;
+		}
 		$this->removeCurrentWindow();
 
 		if($this->messageCounter <= 0){
@@ -1872,6 +1878,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	 * @return bool if an action took place successfully
 	 */
 	public function attackBlock(Vector3 $pos, int $face) : bool{
+		if(!$this->server->getAuthManager()->isAuthenticated($this)){
+			return false;
+		}
 		if($pos->distanceSquared($this->location) > 10000){
 			return false; //TODO: maybe this should throw an exception instead?
 		}
@@ -1949,6 +1958,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	 * @return bool if it did something
 	 */
 	public function interactBlock(Vector3 $pos, int $face, Vector3 $clickOffset) : bool{
+		if(!$this->server->getAuthManager()->isAuthenticated($this)){
+			return false;
+		}
 		$this->setUsingItem(false);
 
 		if($this->canInteract($pos->add(0.5, 0.5, 0.5), $this->isCreative() ? self::MAX_REACH_DISTANCE_CREATIVE : self::MAX_REACH_DISTANCE_SURVIVAL)){
@@ -1974,6 +1986,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	 * @return bool if the entity was dealt damage
 	 */
 	public function attackEntity(Entity $entity) : bool{
+		if(!$this->server->getAuthManager()->isAuthenticated($this)){
+			return false;
+		}
 		if(!$entity->isAlive()){
 			return false;
 		}
@@ -2064,6 +2079,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	 * Interacts with the given entity using the currently-held item.
 	 */
 	public function interactEntity(Entity $entity, Vector3 $clickPos) : bool{
+		if(!$this->server->getAuthManager()->isAuthenticated($this)){
+			return false;
+		}
 		$ev = new PlayerEntityInteractEvent($this, $entity, $clickPos);
 
 		if(!$this->canInteract($entity->getLocation(), self::MAX_REACH_DISTANCE_ENTITY_INTERACTION)){
@@ -2401,8 +2419,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 			throw new \LogicException("Player is still connected");
 		}
 
-		//prevent the player receiving their own disconnect message
-		$this->server->unsubscribeFromAllBroadcastChannels($this);
+			$this->server->getAuthManager()->logout($this);
+
+			//prevent the player receiving their own disconnect message
+			$this->server->unsubscribeFromAllBroadcastChannels($this);
 
 		$this->removeCurrentWindow();
 

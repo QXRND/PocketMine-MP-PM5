@@ -65,6 +65,14 @@ memory:
     #Cap maximum render distance per player when low memory is triggered. Set to 0 to disable cap.
     chunk-radius: 4
 
+authentication:
+  #Enable native register/login forms. Disabled by default for backwards compatibility.
+  enabled: false
+  #SQLite database path relative to the server data directory unless absolute.
+  database: accounts.db
+  #Maximum incorrect passwords before the player is kicked.
+  max-attempts: 3
+
 network:
   #Threshold for batching packets, in bytes. Only these packets will be compressed
   #Set to 0 to compress everything, -1 to disable.

