@@ -25,16 +25,18 @@ namespace pocketmine\console;
 
 use pocketmine\utils\Utils;
 use function fclose;
-use function fgets;
 use function fopen;
+use function fread;
 use function is_resource;
-use function stream_select;
+use function strpos;
+use function stream_set_blocking;
+use function substr;
 use function trim;
-use function usleep;
 
 final class ConsoleReader{
-	/** @var resource */
+	/** @var resource|null */
 	private $stdin;
+	private string $buffer = "";
 
 	public function __construct(){
 		$this->initStdin();
@@ -46,30 +48,34 @@ final class ConsoleReader{
 		}
 
 		$this->stdin = Utils::assumeNotFalse(fopen("php://stdin", "r"), "Opening stdin should never fail");
+		stream_set_blocking($this->stdin, false);
 	}
 
 	/**
-	 * Reads a line from the console and adds it to the buffer. This method may block the thread.
+	 * Reads one complete line without blocking the server tick.
+	 *
+	 * This works with both an interactive terminal and the pipe used by
+	 * Pterodactyl's console. Partial writes are retained until a newline arrives.
 	 */
 	public function readLine() : ?string{
 		if(!is_resource($this->stdin)){
 			$this->initStdin();
 		}
 
-		$r = [$this->stdin];
-		$w = $e = null;
-		if(($count = stream_select($r, $w, $e, 0, 200000)) === 0){ //nothing changed in 200000 microseconds
-			return null;
-		}elseif($count === false){ //stream error
+		while(($chunk = fread($this->stdin, 8192)) !== false && $chunk !== ""){
+			$this->buffer .= $chunk;
+			if(strpos($chunk, "\n") === false){
+				break;
+			}
+		}
+
+		$lineEnd = strpos($this->buffer, "\n");
+		if($lineEnd === false){
 			return null;
 		}
 
-		if(($raw = fgets($this->stdin)) === false){ //broken pipe or EOF
-			usleep(200000); //prevent CPU waste if it's end of pipe
-			return null; //loop back round
-		}
-
-		$line = trim($raw);
+		$line = trim(substr($this->buffer, 0, $lineEnd));
+		$this->buffer = substr($this->buffer, $lineEnd + 1);
 
 		return $line !== "" ? $line : null;
 	}

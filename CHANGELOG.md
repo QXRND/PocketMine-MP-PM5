@@ -2,6 +2,20 @@
 
 This changelog covers changes made in this fork on top of [NetherGamesMC/PocketMine-MP](https://github.com/NetherGamesMC/PocketMine-MP). For the upstream PocketMine-MP changelog (protocol/version history up to the point this fork was based on), see the [`changelogs/`](changelogs/) directory inherited from upstream.
 
+## v5.44.5-qxrnd.17
+
+### Console input reliability
+
+- Replaced the `stream_select()`-based console polling path with a non-blocking buffered reader that works with both interactive terminals and Pterodactyl stdin pipes.
+- Partial writes are retained until a newline is received, and multiple commands in one read are processed one at a time.
+- Console output formatting and ANSI color preservation remain unchanged.
+
+### Validation
+
+- Console reader pipe smoke test passes for `ver` and `status`.
+- Multiversion smoke test and SQLite auth smoke test pass.
+- PHP syntax validation and `git diff --check` pass.
+
 ## v5.44.5-qxrnd.16
 
 ### Multiversion Bedrock compatibility
