@@ -26,7 +26,7 @@ settings:
 
 redstone:
   #Enable the native redstone simulation and component updates.
-  enabled: true
+  enabled: false
 
 memory:
   #Global soft memory limit in megabytes. Set to 0 to disable

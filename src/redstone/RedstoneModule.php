@@ -22,7 +22,7 @@ final class RedstoneModule{
 	private function __construct(){}
 
 	public static function isEnabled(World $world) : bool{
-		return $world->getServer()->getConfigGroup()->getPropertyBool(Yml::REDSTONE_ENABLED, true);
+		return $world->getServer()->getConfigGroup()->getPropertyBool(Yml::REDSTONE_ENABLED, false);
 	}
 
 	public static function processBlockUpdate(Block $block) : void{
