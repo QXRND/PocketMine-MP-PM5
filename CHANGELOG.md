@@ -2,6 +2,22 @@
 
 This changelog covers changes made in this fork on top of [NetherGamesMC/PocketMine-MP](https://github.com/NetherGamesMC/PocketMine-MP). For the upstream PocketMine-MP changelog (protocol/version history up to the point this fork was based on), see the [`changelogs/`](changelogs/) directory inherited from upstream.
 
+## v5.44.5-qxrnd.16
+
+### Multiversion Bedrock compatibility
+
+- Documented and regression-tested simultaneous support for Minecraft Bedrock 1.21.111 and 1.21.114 through protocol 844.
+- Documented and regression-tested simultaneous support for Minecraft Bedrock 1.26.40, 1.26.42 and 1.26.44 through protocol 2168.
+- Retained Minecraft Bedrock 1.26.45 support through protocol 2169 as the current advertised server version.
+- Added multiversion smoke coverage to ensure all requested version-to-protocol mappings are present in `ProtocolInfo::ACCEPTED_PROTOCOL`.
+
+### Validation
+
+- Multiversion smoke test passes for all six requested versions.
+- SQLite auth smoke test passes.
+- PHP syntax validation and `git diff --check` pass.
+- PHPUnit test source is included; full PHPUnit execution requires the XML/DOM PHP extensions in the build environment.
+
 ## v5.44.5-qxrnd.15
 
 ### Native authentication crash fix

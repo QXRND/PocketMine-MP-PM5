@@ -5,9 +5,9 @@
 ![Protocol](https://img.shields.io/badge/protocol-2169-6F42C1)
 ![Runtime](https://img.shields.io/badge/PHP-8.2-777BB4)
 
-QXRND - PocketMine-MP PM5 is a downstream PocketMine-MP distribution targeting the PM5 plugin API and Minecraft Bedrock 1.26.45. It is derived from the PocketMine-MP ecosystem and carries QXRND-specific protocol, packaging, branding, and operational changes. It is not an official upstream PocketMine-MP release and is not affiliated with Mojang, Microsoft, or the PocketMine-MP maintainers.
+QXRND - PocketMine-MP PM5 is a downstream PocketMine-MP distribution targeting the PM5 plugin API and simultaneous Minecraft Bedrock support for 1.21.111, 1.21.114, 1.26.40, 1.26.42, 1.26.44 and 1.26.45. It is derived from the PocketMine-MP ecosystem and carries QXRND-specific protocol, packaging, branding, and operational changes. It is not an official upstream PocketMine-MP release and is not affiliated with Mojang, Microsoft, or the PocketMine-MP maintainers.
 
-This repository is intended for maintainers and operators who require a PM5-compatible server runtime with a fixed Bedrock protocol target and a reproducible PHAR distribution.
+This repository is intended for maintainers and operators who require a PM5-compatible server runtime with multiversion Bedrock compatibility and a reproducible PHAR distribution.
 
 ## Release profile
 
@@ -15,8 +15,8 @@ This repository is intended for maintainers and operators who require a PM5-comp
 |---|---|
 | Distribution | QXRND - PocketMine-MP PM5 |
 | PocketMine-MP API line | 5.44.5 |
-| Bedrock network version | 1.26.45 |
-| Bedrock protocol | 2169 |
+| Bedrock network versions | 1.21.111, 1.21.114, 1.26.40, 1.26.42, 1.26.44, 1.26.45 |
+| Bedrock protocols | 844, 2168, 2169 |
 | PHP runtime | PHP 8.2, x86_64 |
 | Stable release | [`v5.44.5-qxrnd.10`](https://github.com/QXRND/PocketMine-MP-PM5/releases/tag/v5.44.5-qxrnd.10) |
 | Distribution asset | [`PocketMine-MP.phar`](https://github.com/QXRND/PocketMine-MP-PM5/releases/download/v5.44.5-qxrnd.10/PocketMine-MP.phar) |
@@ -26,13 +26,13 @@ This repository is intended for maintainers and operators who require a PM5-comp
 
 The PM5 branch preserves the PocketMine-MP server architecture: plugin lifecycle and API contracts, command dispatch, permissions, scheduler semantics, world management, RakNet transport integration, resource-pack negotiation, and the server tick loop. QXRND changes are maintained as downstream modifications rather than presented as upstream-compatible guarantees.
 
-The Bedrock layer is pinned to protocol 2169 and its associated 1.26.45 data tables. Plugin authors should distinguish between the documented PM5 API and internal packet or data classes. Code relying on implementation details may require changes when protocol data or dependency revisions are updated.
+The Bedrock layer accepts multiple client versions simultaneously. Versions 1.21.111 and 1.21.114 use protocol 844; versions 1.26.40, 1.26.42 and 1.26.44 use protocol 2168; and version 1.26.45 uses protocol 2169. Packet encoding is selected per session protocol ID, while the server advertises 1.26.45 as its current version. Plugin authors should distinguish between the documented PM5 API and internal packet or data classes. Code relying on implementation details may require changes when protocol data or dependency revisions are updated.
 
 ## QXRND modifications
 
 The distribution contains the following operational and source-level changes:
 
-- Minecraft Bedrock 1.26.45 and protocol 2169 support.
+- Simultaneous Minecraft Bedrock support for 1.21.111/1.21.114 (protocol 844), 1.26.40/1.26.42/1.26.44 (protocol 2168), and 1.26.45 (protocol 2169).
 - QXRND branding in server metadata, version output, startup information, and crash reports.
 - English QXRND output for `/ver`, `/about`, and `/status`, without emojis or decorative diamonds.
 - Discord support in `/ver` and `/about`; `/status` intentionally omits the support link.
@@ -80,11 +80,11 @@ composer install --no-interaction
 RYXMC_MINIMAL_PHAR=1 composer run make-server --no-interaction
 ```
 
-The output artifact is `PocketMine-MP.phar`. The minimal build mode excludes unnecessary historical Bedrock data to reduce extraction-time disk consumption; it does not remove the data required by the target protocol.
+The output artifact is `PocketMine-MP.phar`. The minimal build mode excludes unnecessary historical Bedrock data to reduce extraction-time disk consumption; it does not remove the data required by the supported protocol families.
 
 ## Plugin and protocol compatibility
 
-PM5 plugins should target the PM5 API contract and avoid depending on private implementation details. Plugins that register packet listeners, construct protocol packets, manipulate NBT directly, or assume historical item and block identifiers require integration testing against protocol 2169.
+PM5 plugins should target the PM5 API contract and avoid depending on private implementation details. Plugins that register packet listeners, construct protocol packets, manipulate NBT directly, or assume historical item and block identifiers require integration testing against each supported protocol family, especially 844, 2168 and 2169.
 
 Operators should validate authentication, resource-pack negotiation, inventory transactions, entity metadata, block-state translation, and custom packet handlers after changing the PHAR or dependency lockfile.
 
