@@ -30,7 +30,6 @@ use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissibleDelegateTrait;
 use pocketmine\Server;
-use pocketmine\utils\TextFormat;
 use function explode;
 use function trim;
 use const PHP_INT_MAX;
@@ -62,7 +61,7 @@ class ConsoleCommandSender implements CommandSender{
 		}
 
 		foreach(explode("\n", trim($message), limit: PHP_INT_MAX) as $line){
-			$this->server->getLogger()->info("Command output | " . TextFormat::clean($line));
+			$this->server->getLogger()->info("Command output | " . $line);
 		}
 	}
 

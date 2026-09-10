@@ -2,6 +2,20 @@
 
 This changelog covers changes made in this fork on top of [NetherGamesMC/PocketMine-MP](https://github.com/NetherGamesMC/PocketMine-MP). For the upstream PocketMine-MP changelog (protocol/version history up to the point this fork was based on), see the [`changelogs/`](changelogs/) directory inherited from upstream.
 
+## v5.44.5-qxrnd.14
+
+### Console formatting restoration
+
+- Preserved `§` formatting codes in console command responses so `MainLogger` can render colors and ASCII-style formatted output as ANSI when supported.
+- Log files continue to receive cleaned text, while interactive PC and Pterodactyl consoles receive the formatted output.
+
+### Validation
+
+- PHP syntax validation passes for the console sender.
+- Auth SQLite smoke test passes.
+- `git diff --check` passes.
+- PHAR rebuilt with the minimal packaging configuration.
+
 ## v5.44.5-qxrnd.13
 
 ### Console output and login diagnostics
