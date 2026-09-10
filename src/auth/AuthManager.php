@@ -54,10 +54,14 @@ final class AuthManager{
 		$this->presented[$id] = true;
 		$this->failedAttempts[$id] = $this->failedAttempts[$id] ?? 0;
 		$player->setImmobile(true);
-		if($this->database?->hasAccount($player->getName()) ?? false){
-			$this->sendLoginForm($player);
-		}else{
-			$this->sendRegisterForm($player);
+		try{
+			if($this->database?->hasAccount($player->getName()) ?? false){
+				$this->sendLoginForm($player);
+			}else{
+				$this->sendRegisterForm($player);
+			}
+		}catch(\Throwable $e){
+			$this->failAuthentication($player, $e);
 		}
 	}
 
@@ -134,6 +138,14 @@ final class AuthManager{
 				$this->complete($player);
 			});
 		$player->sendForm($form);
+	}
+
+	private function failAuthentication(Player $player, \Throwable $e) : void{
+		$id = $player->getId();
+		unset($this->presented[$id], $this->failedAttempts[$id]);
+		$player->setImmobile(false);
+		$this->server->getLogger()->error('Native authentication failed for ' . $player->getName() . ': ' . $e->getMessage());
+		$player->kick('Authentication is temporarily unavailable. Please try again later.');
 	}
 
 	private function complete(Player $player) : void{

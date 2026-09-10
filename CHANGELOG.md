@@ -2,6 +2,22 @@
 
 This changelog covers changes made in this fork on top of [NetherGamesMC/PocketMine-MP](https://github.com/NetherGamesMC/PocketMine-MP). For the upstream PocketMine-MP changelog (protocol/version history up to the point this fork was based on), see the [`changelogs/`](changelogs/) directory inherited from upstream.
 
+## v5.44.5-qxrnd.12
+
+### Console, Bedrock connection and authentication fixes
+
+- Restored the native `ConsoleReader` on Linux/macOS. The Windows child-process reader remains enabled only on Windows, fixing console commands that were received but produced no visible output on PC.
+- Extended the default/random skin protection to Bedrock protocol 2169 (Minecraft 1.26.45), preventing the client-side disconnect/crash that occurred after login with Persona or classic default skins. The server now sends a clear disconnect reason instead of silently losing the session.
+- Hardened client skin metadata sanitization by trimming and normalizing invalid `null`/`0.0.0` engine-version values.
+- Hardened native authentication startup and join handling. SQLite/form exceptions are logged and converted into a controlled player kick instead of terminating the server process.
+
+### Validation
+
+- PHP syntax validation passes for all changed components.
+- SQLite auth smoke test passes on PHP 8.3 with PDO SQLite enabled.
+- `git diff --check` passes.
+- PHAR rebuilt with the minimal packaging configuration.
+
 ## v5.44.5-qxrnd.11
 
 ### Native authentication stability fix

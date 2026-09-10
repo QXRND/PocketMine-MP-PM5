@@ -21,6 +21,7 @@ use pocketmine\network\mcpe\protocol\types\skin\SkinData;
 use pocketmine\network\mcpe\protocol\types\skin\SkinImage;
 use function array_map;
 use function base64_decode;
+use function trim;
 
 final class ClientDataToSkinDataHelper{
 
@@ -58,7 +59,8 @@ final class ClientDataToSkinDataHelper{
 	 * for server-generated SkinData (ProtocolInfo::MINECRAFT_VERSION_NETWORK), already proven safe.
 	 */
 	private static function sanitizeEngineVersion(string $engineVersion) : string{
-		return ($engineVersion === "" || $engineVersion === "0.0.0" || $engineVersion === "null")
+		$engineVersion = trim($engineVersion);
+		return ($engineVersion === "" || $engineVersion === "0.0.0" || strtolower($engineVersion) === "null")
 			? \pocketmine\network\mcpe\protocol\ProtocolInfo::MINECRAFT_VERSION_NETWORK
 			: $engineVersion;
 	}

@@ -32,6 +32,7 @@ use pocketmine\command\defaults\AuthCommand;
 use pocketmine\command\CommandSender;
 use pocketmine\command\SimpleCommandMap;
 use pocketmine\console\ConsoleCommandSender;
+use pocketmine\console\ConsoleReader;
 use pocketmine\console\ConsoleReaderChildProcessDaemon;
 use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\CraftingManagerFromDataHelper;
@@ -261,7 +262,7 @@ class Server{
 
 	private MemoryManager $memoryManager;
 
-	private ?ConsoleReaderChildProcessDaemon $console = null;
+	private ConsoleReader|ConsoleReaderChildProcessDaemon|null $console = null;
 	private ?ConsoleCommandSender $consoleSender = null;
 
 	private SimpleCommandMap $commandMap;
@@ -1168,7 +1169,7 @@ class Server{
 
 			//TODO: move console parts to a separate component
 			if($this->configGroup->getPropertyBool(Yml::CONSOLE_ENABLE_INPUT, true)){
-				$this->console = new ConsoleReaderChildProcessDaemon($this->logger);
+				$this->console = DIRECTORY_SEPARATOR === "\\" ? new ConsoleReaderChildProcessDaemon($this->logger) : new ConsoleReader();
 			}
 
 			$this->tickProcessor();
