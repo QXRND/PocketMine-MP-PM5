@@ -53,7 +53,7 @@ final class AuthManager{
 		$id = $player->getId();
 		$this->presented[$id] = true;
 		$this->failedAttempts[$id] = $this->failedAttempts[$id] ?? 0;
-		$player->setImmobile(true);
+		$player->setNoClientPredictions(true);
 		try{
 			if($this->database?->hasAccount($player->getName()) ?? false){
 				$this->sendLoginForm($player);
@@ -143,7 +143,7 @@ final class AuthManager{
 	private function failAuthentication(Player $player, \Throwable $e) : void{
 		$id = $player->getId();
 		unset($this->presented[$id], $this->failedAttempts[$id]);
-		$player->setImmobile(false);
+		$player->setNoClientPredictions(false);
 		$this->server->getLogger()->error('Native authentication failed for ' . $player->getName() . ': ' . $e->getMessage());
 		$player->kick('Authentication is temporarily unavailable. Please try again later.');
 	}
@@ -152,7 +152,7 @@ final class AuthManager{
 		$id = $player->getId();
 		$this->authenticated[$id] = true;
 		unset($this->presented[$id], $this->failedAttempts[$id]);
-		$player->setImmobile(false);
+		$player->setNoClientPredictions(false);
 		$player->sendMessage('§aAuthentication successful. Welcome.');
 	}
 }

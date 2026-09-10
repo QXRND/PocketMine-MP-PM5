@@ -74,7 +74,14 @@ final class ConsoleReader{
 		return $line !== "" ? $line : null;
 	}
 
+	public function quit() : void{
+		if(is_resource($this->stdin)){
+			fclose($this->stdin);
+			$this->stdin = null;
+		}
+	}
+
 	public function __destruct(){
-		fclose($this->stdin);
+		$this->quit();
 	}
 }

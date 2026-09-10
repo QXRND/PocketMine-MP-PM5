@@ -2,6 +2,21 @@
 
 This changelog covers changes made in this fork on top of [NetherGamesMC/PocketMine-MP](https://github.com/NetherGamesMC/PocketMine-MP). For the upstream PocketMine-MP changelog (protocol/version history up to the point this fork was based on), see the [`changelogs/`](changelogs/) directory inherited from upstream.
 
+## v5.44.5-qxrnd.15
+
+### Native authentication crash fix
+
+- Replaced the invalid `Player::setImmobile()` calls in the native auth flow with the PM5-compatible `setNoClientPredictions()` API.
+- Added the missing `ConsoleReader::quit()` implementation so normal shutdown and crash-dump cleanup no longer trigger a secondary crash.
+- The crashdump confirmed the original failure at `AuthManager.php:56` when `authentication.enabled: true`; the auth system is now able to reach the register/login form without that fatal error.
+
+### Validation
+
+- PHP syntax validation passes for the auth, console and server components.
+- SQLite auth smoke test passes on PHP 8.3 with PDO SQLite enabled.
+- `git diff --check` passes.
+- PHAR rebuilt with the minimal packaging configuration.
+
 ## v5.44.5-qxrnd.14
 
 ### Console formatting restoration
