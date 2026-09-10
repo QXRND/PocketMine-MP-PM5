@@ -33,6 +33,7 @@ use function json_decode;
 use function json_encode;
 use function random_bytes;
 use function str_repeat;
+use function str_starts_with;
 use const JSON_THROW_ON_ERROR;
 
 class LegacySkinAdapter implements SkinAdapter{
@@ -55,7 +56,7 @@ class LegacySkinAdapter implements SkinAdapter{
 	}
 
 	public function fromSkinData(SkinData $data) : Skin{
-		if($data->isPersona()){
+		if($data->isPersona() || str_starts_with($data->getSkinId(), "c18e65aa-7b21-4637-9b63-8ad63622ef01.")){
 			return new Skin("Standard_Custom", str_repeat(random_bytes(3) . "\xff", 4096));
 		}
 

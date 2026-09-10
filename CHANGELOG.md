@@ -7,7 +7,7 @@ This changelog covers changes made in this fork on top of [NetherGamesMC/PocketM
 ### Console, Bedrock connection and authentication fixes
 
 - Restored the native `ConsoleReader` on Linux/macOS. The Windows child-process reader remains enabled only on Windows, fixing console commands that were received but produced no visible output on PC.
-- Extended the default/random skin protection to Bedrock protocol 2169 (Minecraft 1.26.45), preventing the client-side disconnect/crash that occurred after login with Persona or classic default skins. The server now sends a clear disconnect reason instead of silently losing the session.
+- Added a safe skin fallback for Bedrock protocol 2169 (Minecraft 1.26.45). Persona and classic default skins are accepted during login and converted to a `Standard_Custom` skin before the player is created, avoiding the client-side disconnect/crash instead of rejecting the player.
 - Hardened client skin metadata sanitization by trimming and normalizing invalid `null`/`0.0.0` engine-version values.
 - Hardened native authentication startup and join handling. SQLite/form exceptions are logged and converted into a controlled player kick instead of terminating the server process.
 

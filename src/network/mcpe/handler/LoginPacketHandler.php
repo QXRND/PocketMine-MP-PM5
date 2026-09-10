@@ -238,54 +238,11 @@ class LoginPacketHandler extends PacketHandler{
 
 		$clientData = $this->parseClientData($packet->clientDataJwt);
 
-		//protocol >= 1.26.40 (2168) disconnects the client itself (and, observed in
-		//production, kicks every other online player too) a moment after spawning if it
-		//logs in with a Persona skin (Bedrock's "randomized default character" system -
-		//what a player gets if they've never set a custom skin, or a marketplace/
-		//customizable skin left in its default state). Confirmed live: switching to any
-		//non-Persona custom skin fixes it, no server-side exception is ever thrown
-		//anywhere in the skin conversion path, and this still happens even logging in alone
-		//with no other players online, so it isn't specifically about being shown to others.
-		//Also tested replaying the real decoded Persona SkinData (instead of a random-noise
-		//placeholder) to any viewer, matching how BetterAltay - another PMMP fork with 2168
-		//as its primary protocol - handles it: made no difference, same crash, same timing.
-		//This is consistent with Bedrock's own "multiplayer restricted skin" client-side
-		//policy (see official 26.40 changelog / Mojang support docs) rather than anything
-		//we send being wrong - other established Bedrock server software (Hive, CubeCraft)
-		//disables Persona skins entirely for the same reason.
-		//
-		//PersonaSkin=true only covers the *modern* random-character system. The *classic*
-		//default skin pack (Steve/Alex/Ari/Noor/Efe/Kai/Zuri/Sunny/Makena, PersonaSkin=false,
-		//skinId prefix 'c18e65aa-7b21-4637-9b63-8ad63622ef01.') triggers the exact same
-		//crash for 2168.
-		//
-			//IMPORTANT: this applies to the 1.26.40+ protocol family currently used by
-			//this distribution (2168/2169). Do not extend it to unrelated protocol families
-			//without confirming the same client-side limitation.
-			//2026-08-10/13 investigation initially (wrongly)
+					//Persona and classic default skins are accepted. LegacySkinAdapter converts
+			//Persona data to a safe Standard_Custom fallback so the client can complete login
+			//instead of being rejected before the player is created.
 
-		//extended this same check down to protocol 975/1001 (1.26.20-1.26.33) after
-		//observing what looked like an identical crash there - but that crash turned out to
-		//be an unrelated bug (missing "variant" field + wrong VarInt signedness in
-		//CommonTypes::putNetworkItemStackDescriptor(), used by MobEquipmentPacket/
-		//InventorySlotPacket/InventoryContentPacket - see BedrockProtocol commits be47df5
-		//and 5f914f1). Confirmed live 2026-08-13, with that encoding bug fixed: the exact
-		//same default/Persona skin connects fine on 975/1001 with zero issue, while the
-		//identical skin STILL crashes on 2168 with this check fully disabled - proving the
-		//975/1001 case was a false positive and the 2168 case is a genuine, separate,
-		//client-side restriction. Do not re-extend this below PROTOCOL_1_26_40 without new
-		//live evidence.
-		if(
-			($clientData->PersonaSkin || str_starts_with($clientData->SkinId, "c18e65aa-7b21-4637-9b63-8ad63622ef01."))
-				&& $this->session->getProtocolId() >= ProtocolInfo::PROTOCOL_1_26_40
-		){
-			$this->session->disconnectWithError(
-				reason: "Default/random skin not supported on this protocol version",
-				disconnectScreenMessage: "Please set a custom skin before joining (default/random characters aren't supported yet on your Minecraft version)."
-			);
 
-			return null;
-		}
 
 		try{
 			$skin = $this->session->getTypeConverter()->getSkinAdapter()->fromSkinData(ClientDataToSkinDataHelper::fromClientData($clientData));
