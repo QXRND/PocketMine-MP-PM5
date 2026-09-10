@@ -97,6 +97,8 @@ final class YmlServerProperties{
 	public const PLAYER_VERIFY_XUID = 'player.verify-xuid';
 	public const PLUGINS = 'plugins';
 	public const PLUGINS_LEGACY_DATA_DIR = 'plugins.legacy-data-dir';
+	public const REDSTONE = 'redstone';
+	public const REDSTONE_ENABLED = 'redstone.enabled';
 	public const SETTINGS = 'settings';
 	public const SETTINGS_ASYNC_WORKERS = 'settings.async-workers';
 	public const SETTINGS_ENABLE_DEV_BUILDS = 'settings.enable-dev-builds';

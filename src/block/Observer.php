@@ -13,6 +13,7 @@ use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\redstone\RedstoneModule;
 use pocketmine\redstone\block\power\BlockRedstonePowerHelper;
 
 /**
@@ -36,9 +37,12 @@ class Observer extends Opaque implements AnyFacing, PoweredByRedstone{
 	}
 
 	public function onNearbyBlockChange() : void{
+		$world = $this->position->getWorld();
+		if(!RedstoneModule::isEnabled($world)){
+			return;
+		}
 		if(!$this->powered){
 			$this->powered = true;
-			$world = $this->position->getWorld();
 			$world->setBlock($this->position, $this);
 			$world->scheduleDelayedBlockUpdate($this->position, 2);
 			BlockRedstonePowerHelper::power($this);

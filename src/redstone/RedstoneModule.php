@@ -5,6 +5,7 @@ namespace pocketmine\redstone;
 
 use pocketmine\block\Block;
 use pocketmine\world\World;
+use pocketmine\YmlServerProperties as Yml;
 use pocketmine\redstone\block\power\BlockRedstonePowerHelper;
 use pocketmine\redstone\block\transmission\BlockRedstoneTransmissionHelper;
 use pocketmine\redstone\block\utils\BlockRedstoneUtils;
@@ -20,8 +21,15 @@ final class RedstoneModule{
 
 	private function __construct(){}
 
+	public static function isEnabled(World $world) : bool{
+		return $world->getServer()->getConfigGroup()->getPropertyBool(Yml::REDSTONE_ENABLED, true);
+	}
+
 	public static function processBlockUpdate(Block $block) : void{
 		$world = $block->getPosition()->getWorld();
+		if(!self::isEnabled($world)){
+			return;
+		}
 		$tick = $world->getServer()->getTick();
 		if(self::$lastTick !== $tick){
 			self::$lastTick = $tick;
