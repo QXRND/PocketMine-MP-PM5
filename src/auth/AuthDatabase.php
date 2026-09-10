@@ -6,7 +6,6 @@ namespace pocketmine\auth;
 
 use PDO;
 use PDOException;
-use function mb_strtolower;
 use function password_hash;
 use function password_verify;
 use const PASSWORD_DEFAULT;
@@ -79,6 +78,7 @@ final class AuthDatabase{
 	}
 
 	public function normalize(string $username) : string{
-		return mb_strtolower(trim($username), 'UTF-8');
+		// Bedrock usernames are ASCII-compatible; avoid requiring the optional mbstring extension.
+		return strtolower(trim($username));
 	}
 }

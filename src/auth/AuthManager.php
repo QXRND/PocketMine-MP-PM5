@@ -12,7 +12,7 @@ use function max;
 use function strlen;
 
 final class AuthManager{
-	private AuthDatabase $database;
+	private ?AuthDatabase $database = null;
 	private int $maxAttempts;
 	/** @var array<int, int> */
 	private array $failedAttempts = [];
@@ -23,16 +23,23 @@ final class AuthManager{
 
 	public function __construct(private Server $server){
 		$cfg = $server->getConfigGroup();
+		$this->maxAttempts = max(1, $cfg->getPropertyInt('authentication.max-attempts', 3));
+		if(!$cfg->getPropertyBool('authentication.enabled', false)){
+			return;
+		}
 		$path = $cfg->getPropertyString('authentication.database', 'accounts.db');
 		if($path === '' || $path[0] !== '/'){
 			$path = $server->getDataPath() . DIRECTORY_SEPARATOR . $path;
 		}
-		$this->maxAttempts = max(1, $cfg->getPropertyInt('authentication.max-attempts', 3));
-		$this->database = new AuthDatabase($path);
+		try{
+			$this->database = new AuthDatabase($path);
+		}catch(\Throwable $e){
+			$server->getLogger()->critical('Native authentication has been disabled because its SQLite database could not be opened: ' . $e->getMessage());
+		}
 	}
 
 	public function isEnabled() : bool{
-		return $this->server->getConfigGroup()->getPropertyBool('authentication.enabled', false);
+		return $this->database !== null && $this->server->getConfigGroup()->getPropertyBool('authentication.enabled', false);
 	}
 
 	public function isAuthenticated(Player $player) : bool{
@@ -47,7 +54,7 @@ final class AuthManager{
 		$this->presented[$id] = true;
 		$this->failedAttempts[$id] = $this->failedAttempts[$id] ?? 0;
 		$player->setImmobile(true);
-		if($this->database->hasAccount($player->getName())){
+		if($this->database?->hasAccount($player->getName()) ?? false){
 			$this->sendLoginForm($player);
 		}else{
 			$this->sendRegisterForm($player);
@@ -60,19 +67,19 @@ final class AuthManager{
 	}
 
 	public function handlePasswordChange(Player $player, string $oldPassword, string $newPassword) : bool{
-		return $this->database->changePassword($player->getName(), $oldPassword, $newPassword);
+		return $this->database?->changePassword($player->getName(), $oldPassword, $newPassword) ?? false;
 	}
 
 	public function resetPassword(string $username, string $newPassword) : bool{
-		return $this->database->setPassword($username, $newPassword);
+		return $this->database?->setPassword($username, $newPassword) ?? false;
 	}
 
 	public function deleteAccount(string $username) : bool{
-		return $this->database->deleteAccount($username);
+		return $this->database?->deleteAccount($username) ?? false;
 	}
 
 	public function hasAccount(string $username) : bool{
-		return $this->database->hasAccount($username);
+		return $this->database?->hasAccount($username) ?? false;
 	}
 
 	private function sendRegisterForm(Player $player) : void{
@@ -92,7 +99,7 @@ final class AuthManager{
 					$this->sendRegisterForm($player);
 					return;
 				}
-				if(!$this->database->createAccount($player->getName(), $password)){
+				if(!($this->database?->createAccount($player->getName(), $password) ?? false)){
 					$player->sendMessage('§cThis account could not be created. Contact an administrator.');
 					$this->sendRegisterForm($player);
 					return;
@@ -112,7 +119,7 @@ final class AuthManager{
 					return;
 				}
 				$password = (string) ($values[1] ?? '');
-				if(!$this->database->verifyPassword($player->getName(), $password)){
+				if(!($this->database?->verifyPassword($player->getName(), $password) ?? false)){
 					$id = $player->getId();
 					$this->failedAttempts[$id] = ($this->failedAttempts[$id] ?? 0) + 1;
 					if($this->failedAttempts[$id] >= $this->maxAttempts){

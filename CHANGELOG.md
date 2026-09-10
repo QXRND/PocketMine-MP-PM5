@@ -2,6 +2,21 @@
 
 This changelog covers changes made in this fork on top of [NetherGamesMC/PocketMine-MP](https://github.com/NetherGamesMC/PocketMine-MP). For the upstream PocketMine-MP changelog (protocol/version history up to the point this fork was based on), see the [`changelogs/`](changelogs/) directory inherited from upstream.
 
+## v5.44.5-qxrnd.11
+
+### Native authentication stability fix
+
+- Fixed a server crash during native registration/login when the runtime does not provide the optional `mbstring` extension. Bedrock usernames are ASCII-compatible, so normalization now uses the standard `strtolower()` implementation.
+- Prevented the authentication manager from opening `accounts.db` during server startup when `authentication.enabled` is `false`.
+- If native authentication is enabled but SQLite cannot be opened, the server now logs a critical diagnostic and disables native authentication instead of crashing during initialization.
+- Added null-safe account operations and a SQLite/password smoke test covering registration, case-insensitive lookup, password verification, password change, and account deletion.
+
+### Validation
+
+- Auth source files pass PHP syntax validation.
+- SQLite auth smoke test passes on PHP 8.3 with PDO SQLite enabled.
+- `git diff --check` passes.
+
 ## v5.44.2-syntax.1
 
 First public release. Everything below was built on top of NetherGamesMC's multi-protocol base after `pmmp/PocketMine-MP` was archived upstream (2026-07-09) and Bedrock 1.26.40 shipped with no multi-protocol fork supporting it yet.
