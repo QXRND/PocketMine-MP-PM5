@@ -2,6 +2,21 @@
 
 This changelog covers changes made in this fork on top of [NetherGamesMC/PocketMine-MP](https://github.com/NetherGamesMC/PocketMine-MP). For the upstream PocketMine-MP changelog (protocol/version history up to the point this fork was based on), see the [`changelogs/`](changelogs/) directory inherited from upstream.
 
+## v5.44.5-qxrnd.13
+
+### Console output and login diagnostics
+
+- Changed console command responses to use the server logger instead of writing directly to terminal output. Commands such as `ver`, `about` and `status` are now visible through Pterodactyl and ordinary PC consoles.
+- Kept native authentication bypassed when `authentication.enabled` is `false`; the native register/login system is not involved in the reported default configuration.
+- Preserved the safe default-skin fallback and hardened skin metadata handling for Bedrock 1.26.45.
+
+### Validation
+
+- PHP syntax validation passes for the changed console and authentication components.
+- SQLite auth smoke test passes on PHP 8.3 with PDO SQLite enabled.
+- `git diff --check` passes.
+- PHAR rebuilt with the minimal packaging configuration.
+
 ## v5.44.5-qxrnd.12
 
 ### Console, Bedrock connection and authentication fixes
