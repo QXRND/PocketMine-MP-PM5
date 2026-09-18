@@ -1475,6 +1475,10 @@ class NetworkSession{
 	public function syncPlayerList(array $players) : void{
 		$entries = [];
 		foreach($players as $player){
+			if($this->getProtocolId() >= ProtocolInfo::PROTOCOL_1_26_51 && $player === $this->player){
+				//Bedrock 1.26.51 rejects an ADD entry for the local player after spawn.
+				continue;
+			}
 			if($this->typeConverter->isUnsafeSkinForPlayerList($player->getSkin())){
 				continue;
 			}
@@ -1493,6 +1497,9 @@ class NetworkSession{
 	}
 
 	public function onPlayerAdded(Player $p) : void{
+		if($this->getProtocolId() >= ProtocolInfo::PROTOCOL_1_26_51 && $p === $this->player){
+			return;
+		}
 		if($this->typeConverter->isUnsafeSkinForPlayerList($p->getSkin())){
 			return;
 		}
