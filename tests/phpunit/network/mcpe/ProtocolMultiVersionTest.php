@@ -18,7 +18,9 @@ final class ProtocolMultiVersionTest extends TestCase{
 			'1.26.40' => ['1.26.40', ProtocolInfo::PROTOCOL_1_26_40],
 			'1.26.42' => ['1.26.42', ProtocolInfo::PROTOCOL_1_26_40],
 			'1.26.44' => ['1.26.44', ProtocolInfo::PROTOCOL_1_26_40],
+			'1.26.30' => ['1.26.30', ProtocolInfo::PROTOCOL_1_26_30],
 			'1.26.45' => ['1.26.45', ProtocolInfo::PROTOCOL_1_26_45],
+			'1.26.50' => ['1.26.50', ProtocolInfo::PROTOCOL_1_26_50],
 		];
 	}
 
@@ -30,6 +32,6 @@ final class ProtocolMultiVersionTest extends TestCase{
 	}
 
 	public function testCurrentProtocolIsLatestRequestedVersion() : void{
-		self::assertSame(ProtocolInfo::PROTOCOL_1_26_45, ProtocolInfo::CURRENT_PROTOCOL);
+		self::assertSame(ProtocolInfo::PROTOCOL_1_26_50, ProtocolInfo::CURRENT_PROTOCOL);
 	}
 }
