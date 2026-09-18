@@ -77,10 +77,11 @@ class VersionCommand extends VanillaCommand{
 			$sender->sendMessage(TextFormat::BLUE . "------------------------------");
 			$sender->sendMessage(TextFormat::AQUA . "Server    " . TextFormat::WHITE . "> " . TextFormat::AQUA . VersionInfo::NAME);
 			$sender->sendMessage(TextFormat::AQUA . "API       " . TextFormat::WHITE . "> " . $versionColor . "5.44.5 (PM5)");
-			$sender->sendMessage(TextFormat::AQUA . "Author    " . TextFormat::WHITE . "> " . TextFormat::GOLD . "DevPapo");
-			$sender->sendMessage(TextFormat::AQUA . "Platform  " . TextFormat::WHITE . "> " . TextFormat::GREEN . "Minecraft Bedrock");
-			$sender->sendMessage(TextFormat::AQUA . "Bedrock   " . TextFormat::WHITE . "> " . TextFormat::GREEN . ProtocolInfo::MINECRAFT_VERSION_NETWORK . TextFormat::GRAY . " (protocol " . ProtocolInfo::CURRENT_PROTOCOL . ")");
-			$sender->sendMessage(TextFormat::AQUA . "PHP       " . TextFormat::WHITE . "> " . TextFormat::GREEN . PHP_VERSION);
+				$sender->sendMessage(TextFormat::AQUA . "Author    " . TextFormat::WHITE . "> " . TextFormat::GOLD . "DevPapo");
+				$sender->sendMessage(TextFormat::AQUA . "Platform  " . TextFormat::WHITE . "> " . TextFormat::GREEN . "Minecraft Bedrock");
+				$sender->sendMessage(TextFormat::AQUA . "Bedrock   " . TextFormat::WHITE . "> " . TextFormat::GREEN . ProtocolInfo::MINECRAFT_VERSION_NETWORK . TextFormat::GRAY . " (protocol " . ProtocolInfo::CURRENT_PROTOCOL . ")");
+				$sender->sendMessage(TextFormat::AQUA . "Multiversion" . TextFormat::WHITE . " > " . TextFormat::GREEN . "1.21.111, 1.21.114, 1.26.30, 1.26.40, 1.26.42, 1.26.44, 1.26.45, 1.26.50");
+				$sender->sendMessage(TextFormat::AQUA . "PHP       " . TextFormat::WHITE . "> " . TextFormat::GREEN . PHP_VERSION);
 			$sender->sendMessage(TextFormat::AQUA . "System    " . TextFormat::WHITE . "> " . TextFormat::GREEN . Utils::getOS());
 			$sender->sendMessage(TextFormat::AQUA . "OPcache   " . TextFormat::WHITE . "> " . TextFormat::GREEN . "JIT " . $jitText);
 			$sender->sendMessage(TextFormat::AQUA . "Discord   " . TextFormat::WHITE . "> " . TextFormat::AQUA . VersionInfo::DISCORD_URL);
