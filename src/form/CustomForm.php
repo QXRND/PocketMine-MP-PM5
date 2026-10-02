@@ -10,6 +10,7 @@ use pocketmine\player\Player;
 final class CustomForm implements Form{
 	/** @var list<array<string, mixed>> */
 	private array $content = [];
+	/** @var Closure(Player, ?array<int, mixed>): void|null */
 	private ?Closure $handler = null;
 
 	public function __construct(private string $title = ''){ }
@@ -39,7 +40,7 @@ final class CustomForm implements Form{
 		if($options === [] || $default < 0 || $default >= count($options)){
 			throw new \InvalidArgumentException('CustomForm dropdown requires options and a valid default index');
 		}
-		$this->content[] = ['type' => 'dropdown', 'text' => $text, 'options' => array_values($options), 'default' => $default];
+		$this->content[] = ['type' => 'dropdown', 'text' => $text, 'options' => $options, 'default' => $default];
 		return $this;
 	}
 
@@ -54,15 +55,17 @@ final class CustomForm implements Form{
 		if($steps === [] || $default < 0 || $default >= count($steps)){
 			throw new \InvalidArgumentException('CustomForm step slider requires steps and a valid default index');
 		}
-		$this->content[] = ['type' => 'step_slider', 'text' => $text, 'steps' => array_values($steps), 'default' => $default];
+		$this->content[] = ['type' => 'step_slider', 'text' => $text, 'steps' => $steps, 'default' => $default];
 		return $this;
 	}
 
+	/** @param Closure(Player, ?array<int, mixed>): void|null $handler */
 	public function setHandler(?Closure $handler) : self{
 		$this->handler = $handler;
 		return $this;
 	}
 
+	/** @return array<string, mixed> */
 	public function jsonSerialize() : array{
 		return ['type' => 'custom_form', 'title' => $this->title, 'content' => $this->content];
 	}
@@ -102,6 +105,7 @@ final class CustomForm implements Form{
 		}
 	}
 
+	/** @param array<string, mixed> $element */
 	private function validateValue(array $element, mixed $value) : void{
 		switch($element['type']){
 			case 'input':
@@ -112,7 +116,8 @@ final class CustomForm implements Form{
 				break;
 			case 'dropdown':
 			case 'step_slider':
-				if(!is_int($value) || $value < 0 || $value >= count($element[$element['type'] === 'dropdown' ? 'options' : 'steps'])) throw new FormValidationException('CustomForm selection response is invalid');
+				$options = $element[$element['type'] === 'dropdown' ? 'options' : 'steps'] ?? null;
+				if(!is_array($options) || !is_int($value) || $value < 0 || $value >= count($options)) throw new FormValidationException('CustomForm selection response is invalid');
 				break;
 			case 'slider':
 				if(!is_int($value) && !is_float($value)) throw new FormValidationException('CustomForm slider response must be numeric');

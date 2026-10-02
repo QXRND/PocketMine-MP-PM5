@@ -40,7 +40,7 @@ final class AuthDatabase{
 				'updated' => $now,
 			]);
 		}catch(PDOException $e){
-			if((int) $e->errorInfo[1] === 19){
+			if(isset($e->errorInfo[1]) && (int) $e->errorInfo[1] === 19){
 				return false;
 			}
 			throw $e;

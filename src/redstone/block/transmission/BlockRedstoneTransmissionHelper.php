@@ -42,11 +42,12 @@ class BlockRedstoneTransmissionHelper implements IBlockRedstoneHelper{
 		}
 	}
 
+	/** @param array<int, true> $visitedBlocks */
 	public static function transmite(Block $block, int $power, array &$visitedBlocks = []) : void{
 		$pos = $block->getPosition();
 		$world = $pos->getWorld();
 
-		$hash = World::blockHash($pos->x, $pos->y, $pos->z);
+		$hash = World::blockHash((int) $pos->x, (int) $pos->y, (int) $pos->z);
 		if(isset($visitedBlocks[$hash])){
 			return;
 		}
@@ -83,7 +84,8 @@ class BlockRedstoneTransmissionHelper implements IBlockRedstoneHelper{
 		}
 
 		foreach($neighbors as $neighbor){
-			if(!isset($visitedBlocks[World::blockHash($neighbor->getPosition()->x, $neighbor->getPosition()->y, $neighbor->getPosition()->z)])){
+			$neighborPos = $neighbor->getPosition();
+			if(!isset($visitedBlocks[World::blockHash((int) $neighborPos->x, (int) $neighborPos->y, (int) $neighborPos->z)])){
 				static::transmite($neighbor, $_power, $visitedBlocks);
 			}
 		}

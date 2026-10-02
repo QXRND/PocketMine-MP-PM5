@@ -36,6 +36,7 @@ use pocketmine\block\RedstoneWire;
 use pocketmine\block\Observer;
 use pocketmine\block\SimplePressurePlate;
 use pocketmine\block\WeightedPressurePlate;
+use pocketmine\block\utils\AnalogRedstoneSignalEmitter;
 use pocketmine\block\utils\PoweredByRedstone;
 use pocketmine\math\Facing;
 use pocketmine\world\World;
@@ -62,14 +63,16 @@ final class BlockRedstoneUtils{
 		return false;
 	}
 
+	/** @param array<int, true> $visitedBlocks */
 	public static function hasPowerSourceNearby(Block $block, array &$visitedBlocks = []) : bool{
 		return self::getInputSignalStrength($block, $visitedBlocks) > 0;
 	}
 
+	/** @param array<int, true> $visitedBlocks */
 	public static function getInputSignalStrength(Block $block, array &$visitedBlocks = []) : int{
 		$pos = $block->getPosition();
 		$world = $pos->getWorld();
-		$hash = World::blockHash($pos->x, $pos->y, $pos->z);
+		$hash = World::blockHash((int) $pos->x, (int) $pos->y, (int) $pos->z);
 		if(isset($visitedBlocks[$hash])){
 			return 0;
 		}
@@ -91,8 +94,10 @@ final class BlockRedstoneUtils{
 				$signal = 15;
 			}elseif($neighbor instanceof Observer){
 				$signal = $neighbor->isPowered() ? 15 : 0;
-			}elseif($neighbor instanceof SimplePressurePlate || $neighbor instanceof WeightedPressurePlate){
-				$signal = $neighbor->getOutputSignalStrength();
+				}elseif($neighbor instanceof AnalogRedstoneSignalEmitter){
+					$signal = $neighbor->getOutputSignalStrength();
+				}elseif($neighbor instanceof SimplePressurePlate){
+					$signal = $neighbor->isPressed() ? 15 : 0;
 			}
 			$max = max($max, $signal);
 		}

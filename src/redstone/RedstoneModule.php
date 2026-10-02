@@ -35,7 +35,8 @@ final class RedstoneModule{
 			self::$lastTick = $tick;
 			self::$processed = [];
 		}
-		$key = spl_object_id($world) . ':' . World::blockHash($block->getPosition()->x, $block->getPosition()->y, $block->getPosition()->z);
+		$pos = $block->getPosition();
+		$key = spl_object_id($world) . ':' . World::blockHash((int) $pos->x, (int) $pos->y, (int) $pos->z);
 		if(isset(self::$processed[$key])){
 			return;
 		}

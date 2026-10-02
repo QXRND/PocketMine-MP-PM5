@@ -44,6 +44,8 @@ use pocketmine\block\Dropper;
 use pocketmine\block\SimplePressurePlate;
 use pocketmine\block\WeightedPressurePlate;
 use pocketmine\block\WoodenButton;
+use pocketmine\block\utils\AnalogRedstoneSignalEmitter;
+use pocketmine\block\utils\PoweredByRedstone;
 use pocketmine\math\Facing;
 use pocketmine\world\World;
 
@@ -54,13 +56,14 @@ class BlockRedstonePowerHelper implements IBlockRedstoneHelper{
 		self::power($block, $visitedBlocks);
 	}
 
+	/** @param array<int, true> $visitedBlocks */
 	public static function power(Block $block, array &$visitedBlocks = []) : void{
 		$activate = false;
 		$component = null;
 		$ignoreFace = null;
 		$power = 0;
-			if($block instanceof Lever){
-				$activate = $block->isActivated();
+		if($block instanceof Lever){
+			$activate = $block->isActivated();
 			$ignoreFace = $block->getFacing()->getFacing();
 			if($activate === true){
 				$power = 15;
@@ -77,22 +80,24 @@ class BlockRedstonePowerHelper implements IBlockRedstoneHelper{
 			}
 			$component = new PowerComponent($block);
 			$component->scheduleUpdate($redstoneTicks);
-			}elseif($block instanceof RedstoneTorch){
-				$activate = $block->isLit();
-				if($activate === true){
-					$power = 15;
-				}
-			}elseif($block instanceof Observer){
-				$activate = $block->isPowered();
-				if($activate){
-					$power = 15;
-				}
-			}elseif($block instanceof RedstoneRepeater){
-				$activate = $block->isPowered();
+		}elseif($block instanceof RedstoneTorch){
+			$activate = $block->isLit();
+			if($activate === true){
 				$power = 15;
-			}elseif($block instanceof SimplePressurePlate || $block instanceof WeightedPressurePlate){
-			/** @var Block&\pocketmine\block\utils\AnalogRedstoneSignalEmitterTrait $block */
+			}
+		}elseif($block instanceof Observer){
+			$activate = $block->isPowered();
+			if($activate){
+				$power = 15;
+			}
+		}elseif($block instanceof RedstoneRepeater){
+			$activate = $block->isPowered();
+			$power = 15;
+		}elseif($block instanceof AnalogRedstoneSignalEmitter){
 			$power = $block->getOutputSignalStrength();
+			$activate = $power > 0;
+		}elseif($block instanceof SimplePressurePlate){
+			$power = $block->isPressed() ? 15 : 0;
 			$activate = $power > 0;
 		}
 		foreach(Facing::ALL as $face){
@@ -120,18 +125,18 @@ class BlockRedstonePowerHelper implements IBlockRedstoneHelper{
 		}
 	}
 
+	/** @param array<int, true> $visitedBlocks */
 	public static function activate(Block $block, bool $activate, array &$visitedBlocks = []) : void{
 		$pos = $block->getPosition();
 		$world = $pos->getWorld();
 
-		$hash = World::blockHash($pos->x, $pos->y, $pos->z);
+			$hash = World::blockHash((int) $pos->x, (int) $pos->y, (int) $pos->z);
 			if(isset($visitedBlocks[$hash])){
 			return;
 		}
 		$visitedBlocks[$hash] = true;
 
-		if(BlockRedstoneUtils::isPoweredByRedstone($block)){
-			/** @var Block&\pocketmine\block\utils\PoweredByRedstoneTrait $block */
+		if($block instanceof PoweredByRedstone){
 			$ev = new BlockRedstonePowerEvent($block, $activate);
 			$ev->call();
 			$powered = $ev->getPowered();

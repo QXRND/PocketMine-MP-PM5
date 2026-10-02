@@ -11,6 +11,7 @@ use pocketmine\block\Redstone;
 use pocketmine\block\RedstoneTorch;
 use pocketmine\block\RedstoneWire;
 use pocketmine\block\SimplePressurePlate;
+use pocketmine\block\utils\AnalogRedstoneSignalEmitter;
 use pocketmine\redstone\block\power\BlockRedstonePowerHelper;
 use pocketmine\redstone\block\transmission\BlockRedstoneTransmissionHelper;
 use pocketmine\redstone\component\RedstoneComponent;
@@ -41,7 +42,7 @@ final class PowerComponent implements RedstoneComponent{
 			$neighbor = $block->getSide($face);
 			if($neighbor instanceof RedstoneWire){
 				$pos = $neighbor->getPosition();
-				$visitedBlocks[World::blockHash($pos->x, $pos->y, $pos->z)] = true;
+					$visitedBlocks[World::blockHash((int) $pos->x, (int) $pos->y, (int) $pos->z)] = true;
 			}
 		}
 		BlockRedstoneTransmissionHelper::transmite($block, 0, $visitedBlocks);
@@ -57,8 +58,14 @@ final class PowerComponent implements RedstoneComponent{
 
 	public function getSignalPower() : int{
 		$block = $this->getBlock();
-		if($block instanceof Button || $block instanceof Redstone || $block instanceof SimplePressurePlate){
+		if($block instanceof Button || $block instanceof Redstone){
 			return 15;
+		}
+		if($block instanceof AnalogRedstoneSignalEmitter){
+			return $block->getOutputSignalStrength();
+		}
+		if($block instanceof SimplePressurePlate){
+			return $block->isPressed() ? 15 : 0;
 		}
 		return $block instanceof RedstoneTorch && $block->isLit() ? 15 : 0;
 	}

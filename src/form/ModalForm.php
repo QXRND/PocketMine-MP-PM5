@@ -8,6 +8,7 @@ use Closure;
 use pocketmine\player\Player;
 
 final class ModalForm implements Form{
+	/** @var Closure(Player, bool): void|null */
 	private ?Closure $handler = null;
 
 	public function __construct(private string $title = '', private string $content = '', private string $button1 = 'Yes', private string $button2 = 'No'){ }
@@ -28,11 +29,13 @@ final class ModalForm implements Form{
 		return $this;
 	}
 
+	/** @param Closure(Player, bool): void|null $handler */
 	public function setHandler(?Closure $handler) : self{
 		$this->handler = $handler;
 		return $this;
 	}
 
+	/** @return array<string, string> */
 	public function jsonSerialize() : array{
 		return [
 			'type' => 'modal',

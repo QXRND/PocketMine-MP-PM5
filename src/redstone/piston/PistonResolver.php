@@ -7,6 +7,7 @@ namespace pocketmine\redstone\piston;
 use pocketmine\block\Block;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\block\RuntimeBlockStateRegistry;
+use pocketmine\block\Piston;
 use pocketmine\block\StickyPiston;
 use pocketmine\redstone\block\utils\BlockRedstoneUtils;
 
@@ -23,14 +24,14 @@ final class PistonResolver{
 
 	private function __construct(){ }
 
-	public static function update(Block $piston) : void{
+	public static function update(Piston $piston) : void{
 		$powered = BlockRedstoneUtils::hasPowerSourceNearby($piston);
 		if($powered !== $piston->isPowered()){
 			self::onPowerChanged($piston, $powered);
 		}
 	}
 
-	public static function onPowerChanged(Block $piston, bool $powered) : void{
+	public static function onPowerChanged(Piston $piston, bool $powered) : void{
 		$world = $piston->getPosition()->getWorld();
 		if($piston->isPowered() === $powered){
 			return;
@@ -44,7 +45,7 @@ final class PistonResolver{
 		}
 	}
 
-	private static function extend(Block $piston) : bool{
+	private static function extend(Piston $piston) : bool{
 		$world = $piston->getPosition()->getWorld();
 		$direction = $piston->getFacing();
 		$origin = $piston->getPosition();
@@ -53,7 +54,7 @@ final class PistonResolver{
 
 		for($i = 0; $i < self::MAX_PUSHED_BLOCKS; ++$i){
 			$cursor = $cursor->getSide($direction);
-			if(!$world->isInWorld($cursor->x, $cursor->y, $cursor->z)){
+			if(!$world->isInWorld((int) $cursor->x, (int) $cursor->y, (int) $cursor->z)){
 				return false;
 			}
 			$block = $world->getBlock($cursor);
@@ -75,11 +76,11 @@ final class PistonResolver{
 		for($i = count($blocks) - 1; $i >= 0; --$i){
 			[$source, $block] = $blocks[$i];
 			$target = $source->getSide($direction);
-			if(!$world->isInWorld($target->x, $target->y, $target->z)){
+			if(!$world->isInWorld((int) $target->x, (int) $target->y, (int) $target->z)){
 				return false;
 			}
 			$moved = RuntimeBlockStateRegistry::getInstance()->fromStateId($block->getStateId());
-			$moved->position($world, $target->x, $target->y, $target->z);
+			$moved->position($world, (int) $target->x, (int) $target->y, (int) $target->z);
 			$world->setBlock($target, $moved, update: false);
 			$world->setBlock($source, VanillaBlocks::AIR(), update: false);
 		}
@@ -91,7 +92,7 @@ final class PistonResolver{
 		$direction = $piston->getFacing();
 		$front = $piston->getPosition()->getSide($direction);
 		$target = $front->getSide($direction);
-		if(!$world->isInWorld($target->x, $target->y, $target->z)){
+		if(!$world->isInWorld((int) $target->x, (int) $target->y, (int) $target->z)){
 			return;
 		}
 		$block = $world->getBlock($target);
@@ -99,7 +100,7 @@ final class PistonResolver{
 			return;
 		}
 		$moved = RuntimeBlockStateRegistry::getInstance()->fromStateId($block->getStateId());
-		$moved->position($world, $front->x, $front->y, $front->z);
+		$moved->position($world, (int) $front->x, (int) $front->y, (int) $front->z);
 		$world->setBlock($front, $moved, update: false);
 		$world->setBlock($target, VanillaBlocks::AIR(), update: false);
 	}

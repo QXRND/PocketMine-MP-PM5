@@ -10,6 +10,7 @@ use Closure;
 final class SimpleForm implements Form{
 	/** @var list<array{button_text: string, image?: array{type: string, data: string}}> */
 	private array $buttons = [];
+	/** @var Closure(Player, int): void|null */
 	private ?Closure $handler = null;
 
 	public function __construct(private string $title = '', private string $content = ''){ }
@@ -24,6 +25,7 @@ final class SimpleForm implements Form{
 		return $this;
 	}
 
+	/** @param Closure(Player, self, int): void|null $onClick */
 	public function addButton(string $text, ?Closure $onClick = null, ?string $imageType = null, ?string $imageData = null) : self{
 		$button = ['button_text' => $text];
 		if($imageType !== null && $imageData !== null){
@@ -41,14 +43,16 @@ final class SimpleForm implements Form{
 		return $this;
 	}
 
-	/** @var list<Closure|null> */
+	/** @var list<Closure(Player, self, int): void|null> */
 	private array $buttonHandlers = [];
 
+	/** @param Closure(Player, int): void|null $handler */
 	public function setHandler(?Closure $handler) : self{
 		$this->handler = $handler;
 		return $this;
 	}
 
+	/** @return array<string, mixed> */
 	public function jsonSerialize() : array{
 		return [
 			'type' => 'form',
@@ -69,7 +73,7 @@ final class SimpleForm implements Form{
 		if(!isset($this->buttons[$index])){
 			throw new FormValidationException("SimpleForm button index $index is out of range");
 		}
-		if(isset($this->buttonHandlers[$index]) && $this->buttonHandlers[$index] !== null){
+		if(isset($this->buttonHandlers[$index])){
 			($this->buttonHandlers[$index])($player, $this, $index);
 		}
 		if($this->handler !== null){

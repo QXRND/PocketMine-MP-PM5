@@ -96,8 +96,8 @@ final class AuthManager{
 					$this->sendRegisterForm($player);
 					return;
 				}
-				$password = (string) ($values[1] ?? '');
-				$confirmation = (string) ($values[2] ?? '');
+				$password = is_string($values[1] ?? null) ? $values[1] : '';
+				$confirmation = is_string($values[2] ?? null) ? $values[2] : '';
 				if(strlen($password) < 6 || strlen($password) > 128 || $password !== $confirmation){
 					$player->sendMessage('§cRegistration failed. Use 6-128 characters and make both passwords identical.');
 					$this->sendRegisterForm($player);
@@ -122,7 +122,7 @@ final class AuthManager{
 					$this->sendLoginForm($player);
 					return;
 				}
-				$password = (string) ($values[1] ?? '');
+				$password = is_string($values[1] ?? null) ? $values[1] : '';
 				if(!($this->database?->verifyPassword($player->getName(), $password) ?? false)){
 					$id = $player->getId();
 					$this->failedAttempts[$id] = ($this->failedAttempts[$id] ?? 0) + 1;
