@@ -1,6 +1,6 @@
 param(
-    [string]$TagName = "v5.44.5-qxrnd.21",
-    [string]$ReleaseName = "QXRND - PocketMine-MP PM5 1.26.60 (v5.44.5-qxrnd.21)",
+    [string]$TagName = "v5.44.6-qxrnd.0",
+    [string]$ReleaseName = "QXRND - PocketMine-MP PM5 1.26.60 (v5.44.6-qxrnd.0)",
     [string]$ReleaseBody = "## QXRND - PocketMine-MP PM5 1.26.60 (v5.44.5-qxrnd.21)`n`n### Novedades en esta version`n- **Compatibilidad Bedrock 1.26.60 (Protocolo 2225):**`n  - Soporte multi-version simultaneo desde Bedrock 1.21.111 hasta 1.26.60 (Protocolos 844 a 2225).`n  - Mapeo de paquetes y esquemas de items actualizados.`n- **Integracion de SCON Licensing (Grado Elite Militar):**`n  - Validacion criptografica con doble firma (Ed25519 + ECDSA P-384 + SHA3-512 + clave de dispositivo HWID).`n  - Proteccion sincronica en onEnable: el software solo inicia tras validar con https://licences.scon.host.`n  - Re-verificacion periodica en segundo plano cada 30 minutos.`n- **Egg Oficial para Pterodactyl Panel (egg-pmmp-qxrnd.json):**`n  - Descarga e instalacion automatica del PHAR oficial desde GitHub Releases.`n  - Descarga del runtime de PHP ZTS oficial para PM5 con soporte para x86_64 y aarch64.`n  - Mapeo automatico de la variable LICENSE_KEY en Pterodactyl a plugin_data/PMMP-QXRND/config.yml.`n`n**Autor:** DevPapo | **Portal de Licencias:** https://licences.scon.host | **Contacto:** admin@scon.host"
 )
 
