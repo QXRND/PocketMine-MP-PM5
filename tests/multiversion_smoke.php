@@ -16,6 +16,7 @@ $expected = [
 	'1.26.45' => ProtocolInfo::PROTOCOL_1_26_45,
 	'1.26.50' => ProtocolInfo::PROTOCOL_1_26_50,
 	'1.26.51' => ProtocolInfo::PROTOCOL_1_26_51,
+	'1.26.60' => ProtocolInfo::PROTOCOL_1_26_60,
 ];
 
 foreach($expected as $version => $protocol){
@@ -24,8 +25,8 @@ foreach($expected as $version => $protocol){
 	}
 }
 
-if(ProtocolInfo::CURRENT_PROTOCOL !== ProtocolInfo::PROTOCOL_1_26_51){
-	throw new RuntimeException('Current protocol is not 2193');
+if(ProtocolInfo::CURRENT_PROTOCOL !== ProtocolInfo::PROTOCOL_1_26_60){
+	throw new RuntimeException('Current protocol is not 2225');
 }
 
 echo "multiversion smoke test passed\n";

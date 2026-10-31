@@ -2,10 +2,10 @@
 
 ![Platform](https://img.shields.io/badge/platform-Minecraft%20Bedrock-55C2E6)
 ![API](https://img.shields.io/badge/API-5.44.5-2F81F7)
-![Protocol](https://img.shields.io/badge/protocol-2193-6F42C1)
+![Protocol](https://img.shields.io/badge/protocol-2225-6F42C1)
 ![Runtime](https://img.shields.io/badge/PHP-8.2-777BB4)
 
-QXRND - PocketMine-MP PM5 is a downstream PocketMine-MP distribution targeting the PM5 plugin API and simultaneous Minecraft Bedrock support for 1.21.111, 1.21.114, 1.26.30, 1.26.40, 1.26.42, 1.26.44, 1.26.45, 1.26.50 and 1.26.51. It is derived from the PocketMine-MP ecosystem and carries QXRND-specific protocol, packaging, branding, and operational changes. It is not an official upstream PocketMine-MP release and is not affiliated with Mojang, Microsoft, or the PocketMine-MP maintainers.
+QXRND - PocketMine-MP PM5 is a downstream PocketMine-MP distribution targeting the PM5 plugin API and simultaneous Minecraft Bedrock support for 1.21.111, 1.21.114, 1.26.30, 1.26.40, 1.26.42, 1.26.44, 1.26.45, 1.26.50, 1.26.51 and 1.26.60. It is derived from the PocketMine-MP ecosystem and carries QXRND-specific protocol, packaging, branding, and operational changes. It is not an official upstream PocketMine-MP release and is not affiliated with Mojang, Microsoft, or the PocketMine-MP maintainers.
 
 This repository is intended for maintainers and operators who require a PM5-compatible server runtime with multiversion Bedrock compatibility and a reproducible PHAR distribution.
 
@@ -15,24 +15,24 @@ This repository is intended for maintainers and operators who require a PM5-comp
 |---|---|
 | Distribution | QXRND - PocketMine-MP PM5 |
 | PocketMine-MP API line | 5.44.5 |
-| Bedrock network versions | 1.21.111, 1.21.114, 1.26.30, 1.26.40, 1.26.42, 1.26.44, 1.26.45, 1.26.50, 1.26.51 |
-| Bedrock protocols | 844, 1001, 2168, 2169, 2170, 2193 |
+| Bedrock network versions | 1.21.111, 1.21.114, 1.26.30, 1.26.40, 1.26.42, 1.26.44, 1.26.45, 1.26.50, 1.26.51, 1.26.60 |
+| Bedrock protocols | 844, 1001, 2168, 2169, 2170, 2193, 2225 |
 | PHP runtime | PHP 8.2, x86_64 |
-| Stable release | [`v5.44.5-qxrnd.10`](https://github.com/QXRND/PocketMine-MP-PM5/releases/tag/v5.44.5-qxrnd.10) |
-| Distribution asset | [`PocketMine-MP.phar`](https://github.com/QXRND/PocketMine-MP-PM5/releases/download/v5.44.5-qxrnd.10/PocketMine-MP.phar) |
+| Stable release | [`v5.44.5-qxrnd.20`](https://github.com/QXRND/PocketMine-MP-PM5/releases/tag/v5.44.5-qxrnd.20) |
+| Distribution asset | [`PocketMine-MP.phar`](https://github.com/QXRND/PocketMine-MP-PM5/releases/download/v5.44.5-qxrnd.20/PocketMine-MP.phar) |
 | Author and maintainer | **DevPapo** |
 
 ## Upstream lineage and design boundaries
 
 The PM5 branch preserves the PocketMine-MP server architecture: plugin lifecycle and API contracts, command dispatch, permissions, scheduler semantics, world management, RakNet transport integration, resource-pack negotiation, and the server tick loop. QXRND changes are maintained as downstream modifications rather than presented as upstream-compatible guarantees.
 
-The Bedrock layer accepts multiple client versions simultaneously. Versions 1.21.111 and 1.21.114 use protocol 844; version 1.26.30 uses protocol 1001; versions 1.26.40, 1.26.42 and 1.26.44 use protocol 2168; version 1.26.45 uses protocol 2169; version 1.26.50 uses protocol 2170; and version 1.26.51 uses protocol 2193. Packet encoding is selected per session protocol ID, while the server advertises 1.26.51 as its current version. Plugin authors should distinguish between the documented PM5 API and internal packet or data classes. Code relying on implementation details may require changes when protocol data or dependency revisions are updated.
+The Bedrock layer accepts multiple client versions simultaneously. Versions 1.21.111 and 1.21.114 use protocol 844; version 1.26.30 uses protocol 1001; versions 1.26.40, 1.26.42 and 1.26.44 use protocol 2168; version 1.26.45 uses protocol 2169; version 1.26.50 uses protocol 2170; version 1.26.51 uses protocol 2193; and version 1.26.60 uses protocol 2225. Packet encoding is selected per session protocol ID, while the server advertises 1.26.60 as its current version. Plugin authors should distinguish between the documented PM5 API and internal packet or data classes. Code relying on implementation details may require changes when protocol data or dependency revisions are updated.
 
 ## QXRND modifications
 
 The distribution contains the following operational and source-level changes:
 
-- Simultaneous Minecraft Bedrock support for 1.21.111/1.21.114 (protocol 844), 1.26.30 (protocol 1001), 1.26.40/1.26.42/1.26.44 (protocol 2168), 1.26.45 (protocol 2169), 1.26.50 (protocol 2170), and 1.26.51 (protocol 2193).
+- Simultaneous Minecraft Bedrock support for 1.21.111/1.21.114 (protocol 844), 1.26.30 (protocol 1001), 1.26.40/1.26.42/1.26.44 (protocol 2168), 1.26.45 (protocol 2169), 1.26.50 (protocol 2170), 1.26.51 (protocol 2193), and 1.26.60 (protocol 2225).
 - QXRND branding in server metadata, version output, startup information, and crash reports.
 - English QXRND output for `/ver`, `/about`, and `/status`, without emojis or decorative diamonds.
 - Discord support in `/ver` and `/about`; `/status` intentionally omits the support link.
@@ -84,7 +84,7 @@ The output artifact is `PocketMine-MP.phar`. The minimal build mode excludes unn
 
 ## Plugin and protocol compatibility
 
-PM5 plugins should target the PM5 API contract and avoid depending on private implementation details. Plugins that register packet listeners, construct protocol packets, manipulate NBT directly, or assume historical item and block identifiers require integration testing against each supported protocol family, especially 844, 1001, 2168, 2169, 2170 and 2193.
+PM5 plugins should target the PM5 API contract and avoid depending on private implementation details. Plugins that register packet listeners, construct protocol packets, manipulate NBT directly, or assume historical item and block identifiers require integration testing against each supported protocol family, especially 844, 1001, 2168, 2169, 2170, 2193 and 2225.
 
 Operators should validate authentication, resource-pack negotiation, inventory transactions, entity metadata, block-state translation, and custom packet handlers after changing the PHAR or dependency lockfile.
 
@@ -97,8 +97,8 @@ The stable release asset is updated in place for small fixes instead of creating
 | Resource | Link |
 |---|---|
 | Source repository | [QXRND/PocketMine-MP-PM5](https://github.com/QXRND/PocketMine-MP-PM5) |
-| Stable release | [`v5.44.5-qxrnd.10`](https://github.com/QXRND/PocketMine-MP-PM5/releases/tag/v5.44.5-qxrnd.10) |
-| Direct PHAR download | [`PocketMine-MP.phar`](https://github.com/QXRND/PocketMine-MP-PM5/releases/download/v5.44.5-qxrnd.10/PocketMine-MP.phar) |
+| Stable release | [`v5.44.5-qxrnd.20`](https://github.com/QXRND/PocketMine-MP-PM5/releases/tag/v5.44.5-qxrnd.20) |
+| Direct PHAR download | [`PocketMine-MP.phar`](https://github.com/QXRND/PocketMine-MP-PM5/releases/download/v5.44.5-qxrnd.20/PocketMine-MP.phar) |
 | Pterodactyl Egg | [QXRND/PocketMine-MP-Egg](https://github.com/QXRND/PocketMine-MP-Egg) |
 | Technical support and invitation | [QXRND Discord](https://discord.gg/qhUXn72rGB) |
 | Upstream lineage | [pmmp/PocketMine-MP](https://github.com/pmmp/PocketMine-MP) |

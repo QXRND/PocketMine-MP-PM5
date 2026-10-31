@@ -48,6 +48,7 @@ final class ItemTypeDictionaryFromDataHelper{
 		ProtocolInfo::PROTOCOL_1_26_40 => "-1.26.40",
 		ProtocolInfo::PROTOCOL_1_26_50 => "",
 		ProtocolInfo::PROTOCOL_1_26_51 => "",
+		ProtocolInfo::PROTOCOL_1_26_60 => "",
 		ProtocolInfo::PROTOCOL_1_26_45 => "",
 		ProtocolInfo::CURRENT_PROTOCOL => "",
 		ProtocolInfo::PROTOCOL_1_26_20 => "-1.26.20",
