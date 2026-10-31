@@ -269,7 +269,7 @@ JIT_WARNING
 		require_once($bootstrap);
 
 		$composerGitHash = InstalledVersions::getReference('qxrnd/ryxmc');
-		if($composerGitHash !== null){
+		if($composerGitHash !== null && \Phar::running(true) === ""){
 			//we can't verify dependency versions if we were installed without using git
 			$currentGitHash = explode("-", VersionInfo::GIT_HASH(), 2)[0];
 			if($currentGitHash !== $composerGitHash){
