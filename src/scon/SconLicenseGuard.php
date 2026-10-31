@@ -357,10 +357,6 @@ final class SconLicenseGuard {
         @chmod($file, 0600);
         return $key;
     }
-        file_put_contents($file, $pem);
-        @chmod($file, 0600);
-        return $key;
-    }
 
     private function computeHwid(): string {
         $id = "";
