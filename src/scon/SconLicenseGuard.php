@@ -83,6 +83,7 @@ final class SconLicenseGuard {
 
     private const VERIFY_URL = "https://licences.scon.host/api/v1/license/verify";
     private const PROJECT_SLUG = "pmmp-qxrnd";
+    private const PRODUCT_NAME = "PMMP-QXRND";
     private const TIER = "military_ed25519";
     // Claves PÚBLICAS del proyecto: solo sirven para verificar, nunca para firmar
     private const ECDSA_P384_PUBLIC_KEY = "MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAE9BMnUwTaB0pnte0tjMRg7AVHI1hscsxZhNku/hfSh5XDy9M3Yqpj+yzrv/PSKJpHnYkHUj5lSSRCDfBCN1BnZ5ggskOOQmhgqtaCADEDKhLoI9kiQXLayzcXpF5ZBO9X";
@@ -190,7 +191,7 @@ final class SconLicenseGuard {
             "protocol" => 2,
             "license_key" => $key,
             "project_slug" => self::PROJECT_SLUG,
-            "product_name" => VersionInfo::NAME,
+            "product_name" => self::PRODUCT_NAME,
             "plugin_version" => VersionInfo::VERSION()->getFullVersion(true),
             "server_port" => $this->server->getPort(),
             "client_nonce" => $nonce,
