@@ -1,0 +1,8 @@
+name: PMMP-QXRND
+version: 1.0.0
+main: devpapo\pmmpqxrnd\Main
+api: 5.0.0
+author: devpapo
+description: SCON Licensing Security Guard (Militar Ed25519) para PMMP-QXRND
+website: https://licences.scon.host
+load: STARTUP
