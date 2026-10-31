@@ -283,21 +283,43 @@ final class SconLicenseGuard {
         return $data;
     }
 
-    private static function opensslConfig(): array {
-        $config = ["private_key_type" => OPENSSL_KEYTYPE_EC, "curve_name" => "secp384r1"];
-        if (PHP_OS_FAMILY === "Windows") {
-            foreach ([
-                dirname(PHP_BINARY) . "/extras/ssl/openssl.cnf",
-                dirname(PHP_BINARY, 2) . "/extras/ssl/openssl.cnf",
-                "C:/Program Files/Common Files/SSL/openssl.cnf",
-            ] as $cnf) {
-                if (is_file($cnf)) {
-                    $config["config"] = $cnf;
-                    break;
-                }
+    private static ?string $opensslCnfPath = null;
+
+    private static function resolveOpensslConfigPath(): string {
+        if (self::$opensslCnfPath !== null && is_file(self::$opensslCnfPath)) {
+            return self::$opensslCnfPath;
+        }
+
+        $candidates = [
+            "/etc/ssl/openssl.cnf",
+            "/usr/lib/ssl/openssl.cnf",
+            "/usr/local/ssl/openssl.cnf",
+            dirname(PHP_BINARY) . "/extras/ssl/openssl.cnf",
+            dirname(PHP_BINARY, 2) . "/extras/ssl/openssl.cnf",
+            "C:/Program Files/Common Files/SSL/openssl.cnf"
+        ];
+        foreach ($candidates as $candidate) {
+            if (is_file($candidate)) {
+                self::$opensslCnfPath = $candidate;
+                return $candidate;
             }
         }
-        return $config;
+
+        $fallback = Path::join(sys_get_temp_dir(), "scon_openssl.cnf");
+        if (!is_file($fallback)) {
+            @file_put_contents($fallback, "HOME = .\nopenssl_conf = openssl_init\n[openssl_init]\n[req]\ndefault_bits = 2048\n");
+            @chmod($fallback, 0644);
+        }
+        self::$opensslCnfPath = $fallback;
+        return $fallback;
+    }
+
+    private static function opensslConfig(): array {
+        return [
+            "private_key_type" => OPENSSL_KEYTYPE_EC,
+            "curve_name" => "secp384r1",
+            "config" => self::resolveOpensslConfigPath()
+        ];
     }
 
     private static function newP384Key(): ?\OpenSSLAsymmetricKey {
@@ -330,12 +352,11 @@ final class SconLicenseGuard {
         }
         $key = self::newP384Key();
         $pem = "";
-        $cfg = self::opensslConfig();
-        if (isset($cfg["config"])) {
-            openssl_pkey_export($key, $pem, null, ["config" => $cfg["config"]]);
-        } else {
-            openssl_pkey_export($key, $pem);
-        }
+        openssl_pkey_export($key, $pem, null, ["config" => self::resolveOpensslConfigPath()]);
+        file_put_contents($file, $pem);
+        @chmod($file, 0600);
+        return $key;
+    }
         file_put_contents($file, $pem);
         @chmod($file, 0600);
         return $key;
