@@ -302,6 +302,7 @@ class Server{
 
 		private ServerConfigGroup $configGroup;
 	private AuthManager $authManager;
+	private ?\pocketmine\scon\SconLicenseGuard $sconGuard = null;
 	/** @var Player[] */
 	private array $playerList = [];
 
@@ -1057,6 +1058,12 @@ class Server{
 			)));
 			$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_server_license($this->getName())));
 
+			require_once __DIR__ . '/scon/SconLicenseGuard.php';
+			$this->sconGuard = new \pocketmine\scon\SconLicenseGuard($this);
+			if(!$this->sconGuard->start()){
+				return;
+			}
+
 			DefaultPermissions::registerCorePermissions();
 
 						$this->commandMap = new SimpleCommandMap($this);
@@ -1564,7 +1571,7 @@ class Server{
 		}
 	}
 
-	private function forceShutdownExit() : void{
+	public function forceShutdownExit() : void{
 		$this->forceShutdown();
 		Process::kill(Process::pid());
 	}
@@ -1965,6 +1972,10 @@ class Server{
 		if($this->sendUsageTicker > 0 && --$this->sendUsageTicker === 0){
 			$this->sendUsageTicker = self::TICKS_PER_STATS_REPORT;
 			$this->sendUsage(SendUsageTask::TYPE_STATUS);
+		}
+
+		if(($this->tickCounter % 36000) === 0){
+			$this->sconGuard?->recheck();
 		}
 
 		if(($this->tickCounter % self::TICKS_PER_WORLD_CACHE_CLEAR) === 0){
