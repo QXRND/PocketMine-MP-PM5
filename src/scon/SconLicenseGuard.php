@@ -63,6 +63,18 @@ use const OPENSSL_KEYTYPE_EC;
 use const OPENSSL_RAW_DATA;
 use const PHP_OS_FAMILY;
 
+if (!function_exists("sodium_crypto_sign_verify_detached")) {
+    foreach ([
+        __DIR__ . "/sodium_compat/autoload.php",
+        dirname(__DIR__, 2) . "/vendor/paragonie/sodium_compat/autoload.php"
+    ] as $compat) {
+        if (is_file($compat)) {
+            require_once $compat;
+            break;
+        }
+    }
+}
+
 /**
  * SCON LICENSING — GRADO ÉLITE — Militar + doble firma Ed25519 + clave de dispositivo + SHA3-512
  * Proyecto: PMMP-QXRND (pmmp-qxrnd) · Protocolo v2 · PHP 8.1+ con openssl y sodium
@@ -152,6 +164,17 @@ final class SconLicenseGuard {
         $key = trim($key);
         if ($key === "" || str_contains($key, "XXXX")) {
             return ["valid" => false, "status" => "NO_KEY", "message" => "Configura license-key en Pterodactyl o scon-license.yml"];
+        }
+        if (!function_exists("sodium_crypto_sign_verify_detached")) {
+            foreach ([
+                __DIR__ . "/sodium_compat/autoload.php",
+                dirname(__DIR__, 2) . "/vendor/paragonie/sodium_compat/autoload.php"
+            ] as $compat) {
+                if (is_file($compat)) {
+                    require_once $compat;
+                    break;
+                }
+            }
         }
         if (!function_exists("sodium_crypto_sign_verify_detached")) {
             return ["valid" => false, "status" => "INVALID", "message" => "Este grado requiere la extension sodium de PHP"];
